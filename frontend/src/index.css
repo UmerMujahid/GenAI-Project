@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #030303;
+    color: #f3f4f6; /* gray-100 */
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.025em; /* tracking-tight */
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(3, 3, 3, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(245, 158, 11, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.6);
+}
+
+/* Glow effects */
+.neon-glow-purple {
+  text-shadow: 0 0 10px rgba(167, 139, 250, 0.5), 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.neon-glow-blue {
+  text-shadow: 0 0 10px rgba(96, 165, 250, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.neon-border-glow {
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.1), inset 0 0 15px rgba(245, 158, 11, 0.03);
+}
+
+.neon-border-glow-strong {
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.15), inset 0 0 10px rgba(245, 158, 11, 0.05);
+}
+
+/* Glassmorphism Templates with Stronger Bounds & High Visibility */
+.glass-panel {
+  background: rgba(13, 13, 17, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel-heavy {
+  background: rgba(8, 8, 10, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* Grid overlay background */
+.grid-bg-tech {
+  background-image: 
+    linear-gradient(rgba(245, 158, 11, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 158, 11, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
