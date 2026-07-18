@@ -23,7 +23,7 @@ export default function RealTimeInsights() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {/* Card 1: Resume Match Score */}
-          <Card className="hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.08)] bg-neutral-900/60 border-white/20 transition-all duration-500 ring-1 ring-white/5">
+          <Card className="border-amber-500/15 ring-1 ring-amber-500/5 shadow-[0_0_15px_rgba(245,158,11,0.03)] hover:border-amber-500/45 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] bg-neutral-900/60 transition-all duration-500">
             <CardHeader className="flex flex-row items-center justify-between border-b border-white/10 pb-4">
               <span className="text-xs font-display font-black text-gray-400 uppercase tracking-wider">
                 RESUME MATCH SCORE
@@ -63,7 +63,7 @@ export default function RealTimeInsights() {
           </Card>
 
           {/* Card 2: Weekly Momentum */}
-          <Card className="hover:border-purple-500/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.08)] bg-neutral-900/60 border-white/20 transition-all duration-500 ring-1 ring-white/5">
+          <Card className="border-purple-500/15 ring-1 ring-purple-500/5 shadow-[0_0_15px_rgba(139,92,246,0.03)] hover:border-purple-500/45 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)] bg-neutral-900/60 transition-all duration-500">
             <CardHeader className="flex flex-row items-center justify-between border-b border-white/10 pb-4">
               <span className="text-xs font-display font-black text-gray-400 uppercase tracking-wider">
                 WEEKLY MOMENTUM
@@ -85,7 +85,7 @@ export default function RealTimeInsights() {
           </Card>
 
           {/* Card 3: Response Rate */}
-          <Card className="hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.08)] bg-neutral-900/60 border-white/20 transition-all duration-500 ring-1 ring-white/5">
+          <Card className="border-amber-500/15 ring-1 ring-amber-500/5 shadow-[0_0_15px_rgba(245,158,11,0.03)] hover:border-amber-500/45 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)] bg-neutral-900/60 transition-all duration-500">
             <CardHeader className="flex flex-row items-center justify-between border-b border-white/10 pb-4">
               <span className="text-xs font-display font-black text-gray-400 uppercase tracking-wider">
                 RESPONSE RATE
