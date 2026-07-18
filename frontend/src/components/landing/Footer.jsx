@@ -1,36 +1,38 @@
 import React from 'react'
 
-export default function Footer() {
+export default function Footer({ showCTA = true }) {
   return (
     <footer className="relative bg-[#030303] border-t border-white/10 overflow-hidden z-10 font-display">
       {/* Background glow overlay to brighten the bottom section */}
       <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[550px] h-[300px] rounded-full bg-gradient-to-t from-amber-500/10 via-purple-500/5 to-transparent blur-[120px] pointer-events-none"></div>
 
       {/* Above Footer CTA Section */}
-      <div className="max-w-7xl mx-auto px-6 py-24 text-center relative z-10">
-        <div className="max-w-3xl mx-auto rounded-3xl border border-white/20 bg-gradient-to-b from-neutral-900/60 to-neutral-950/95 p-8 md:p-14 shadow-2xl hover:border-amber-500/30 transition-all duration-500 ring-1 ring-white/10">
-          <span className="text-xs md:text-sm font-display font-black text-amber-500 uppercase tracking-wider block mb-4">
-            GET EARLY ACCESS
-          </span>
-          <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
-            Ready to automate the search?
-          </h2>
-          <p className="text-sm text-gray-300 max-w-lg mx-auto leading-relaxed mb-10 font-sans">
-            Join the cohort of students from FAST, NUST, and other top institutions landing elite internships across Pakistan with multi-agent automation.
-          </p>
+      {showCTA && (
+        <div className="max-w-7xl mx-auto px-6 py-24 text-center relative z-10">
+          <div className="max-w-3xl mx-auto rounded-3xl border border-white/20 bg-gradient-to-b from-neutral-900/60 to-neutral-950/95 p-8 md:p-14 shadow-2xl hover:border-amber-500/30 transition-all duration-500 ring-1 ring-white/10">
+            <span className="text-xs md:text-sm font-display font-black text-amber-500 uppercase tracking-wider block mb-4">
+              GET EARLY ACCESS
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+              Ready to automate the search?
+            </h2>
+            <p className="text-sm text-gray-300 max-w-lg mx-auto leading-relaxed mb-10 font-sans">
+              Join the cohort of students from FAST, NUST, and other top institutions landing elite internships across Pakistan with multi-agent automation.
+            </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter institutional email (.edu.pk)"
-              className="w-full bg-black/60 border border-white/15 rounded px-5 py-3.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-all font-sans"
-            />
-            <button className="bg-white hover:bg-neutral-200 text-black border border-white font-bold text-xs uppercase tracking-wider px-7 py-3.5 rounded transition-all whitespace-nowrap shadow-md shadow-white/5">
-              Join Waitlist
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter institutional email (.edu.pk)"
+                className="w-full bg-black/60 border border-white/15 rounded px-5 py-3.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-all font-sans"
+              />
+              <button className="bg-white hover:bg-neutral-200 text-black border border-white font-bold text-xs uppercase tracking-wider px-7 py-3.5 rounded transition-all whitespace-nowrap shadow-md shadow-white/5">
+                Join Waitlist
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Footer Links */}
       <div className="max-w-7xl mx-auto px-6 py-16 border-t border-white/10 grid grid-cols-2 md:grid-cols-5 gap-10 text-left">
