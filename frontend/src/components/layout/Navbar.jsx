@@ -34,7 +34,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-xs font-bold text-gray-300 uppercase tracking-widest">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-bold text-gray-300 uppercase tracking-widest">
           <a 
             href="#hero" 
             onClick={(e) => handleScrollLink(e, 'hero')} 
@@ -71,18 +71,26 @@ export default function Navbar() {
           >
             About & Contact
           </Link>
+          <Link 
+            to="/dashboard" 
+            className={`hover:text-amber-400 transition-colors ${
+              location.pathname === '/dashboard' ? 'text-amber-500' : ''
+            }`}
+          >
+            Dashboard
+          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
           <Link 
             to="/login" 
-            className="px-4 py-2 rounded text-xs font-bold tracking-wider uppercase border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all text-gray-300"
+            className="px-4 py-2 rounded text-sm font-bold tracking-wider uppercase border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all text-gray-300"
           >
             Login
           </Link>
           <Link 
             to="/signup" 
-            className="px-4 py-2 rounded text-xs font-bold tracking-wider uppercase bg-white text-black hover:bg-neutral-200 transition-all shadow-md"
+            className="px-4 py-2 rounded text-sm font-bold tracking-wider uppercase bg-white text-black hover:bg-neutral-200 transition-all shadow-md"
           >
             Signup
           </Link>

@@ -112,7 +112,7 @@ export default function Signup() {
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           {/* Full Name field */}
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-display">
+            <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1.5 font-display">
               Full Name
             </label>
             <input
@@ -122,14 +122,14 @@ export default function Signup() {
               value={formData.name}
               onChange={handleChange}
               disabled={isLoading}
-              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-xs text-white placeholder-gray-600 focus:outline-none transition-all font-sans ${
+              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all font-sans ${
                 errors.name 
                   ? 'border-rose-500/50 focus:border-rose-500' 
                   : 'border-white/10 focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20'
               }`}
             />
             {errors.name && (
-              <p className="text-rose-400 text-[10px] font-sans mt-1 flex items-center gap-1">
+              <p className="text-rose-400 text-xs font-sans mt-1 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
                 {errors.name}
               </p>
@@ -138,7 +138,7 @@ export default function Signup() {
 
           {/* Email field */}
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-display">
+            <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1.5 font-display">
               Institutional Email
             </label>
             <input
@@ -148,7 +148,7 @@ export default function Signup() {
               value={formData.email}
               onChange={handleChange}
               disabled={isLoading}
-              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-xs text-white placeholder-gray-600 focus:outline-none transition-all font-sans ${
+              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all font-sans ${
                 errors.email
                   ? errors.email.includes('recommended')
                     ? 'border-amber-500/40 focus:border-amber-500'
@@ -157,7 +157,7 @@ export default function Signup() {
               }`}
             />
             {errors.email && (
-              <p className={`text-[10px] font-sans mt-1 flex items-center gap-1 ${
+              <p className={`text-xs font-sans mt-1 flex items-center gap-1 ${
                 errors.email.includes('recommended') ? 'text-amber-400' : 'text-rose-400'
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${
@@ -170,7 +170,7 @@ export default function Signup() {
 
           {/* Password field */}
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-display">
+            <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1.5 font-display">
               Password
             </label>
             <input
@@ -180,14 +180,14 @@ export default function Signup() {
               value={formData.password}
               onChange={handleChange}
               disabled={isLoading}
-              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-xs text-white placeholder-gray-600 focus:outline-none transition-all font-sans ${
+              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all font-sans ${
                 errors.password 
                   ? 'border-rose-500/50 focus:border-rose-500' 
                   : 'border-white/10 focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20'
               }`}
             />
             {errors.password && (
-              <p className="text-rose-400 text-[10px] font-sans mt-1 flex items-center gap-1">
+              <p className="text-rose-400 text-xs font-sans mt-1 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
                 {errors.password}
               </p>
@@ -196,7 +196,7 @@ export default function Signup() {
 
           {/* Confirm Password field */}
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-display">
+            <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1.5 font-display">
               Confirm Password
             </label>
             <input
@@ -206,14 +206,14 @@ export default function Signup() {
               value={formData.confirmPassword}
               onChange={handleChange}
               disabled={isLoading}
-              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-xs text-white placeholder-gray-600 focus:outline-none transition-all font-sans ${
+              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all font-sans ${
                 errors.confirmPassword 
                   ? 'border-rose-500/50 focus:border-rose-500' 
                   : 'border-white/10 focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20'
               }`}
             />
             {errors.confirmPassword && (
-              <p className="text-rose-400 text-[10px] font-sans mt-1 flex items-center gap-1">
+              <p className="text-rose-400 text-xs font-sans mt-1 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
                 {errors.confirmPassword}
               </p>
@@ -224,7 +224,7 @@ export default function Signup() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-4 rounded-xl font-bold text-xs uppercase tracking-wider text-black bg-white hover:bg-neutral-200 transition-all shadow-md mt-6 flex items-center justify-center gap-2 ${
+            className={`w-full py-4 rounded-xl font-bold text-sm uppercase tracking-wider text-black bg-white hover:bg-neutral-200 transition-all shadow-md mt-6 flex items-center justify-center gap-2 ${
               isLoading ? 'opacity-80 cursor-wait' : ''
             }`}
           >
@@ -243,7 +243,7 @@ export default function Signup() {
         </form>
 
         {/* Toggle link */}
-        <p className="text-center text-xs text-gray-500 font-sans mt-8">
+        <p className="text-center text-sm text-gray-400 font-sans mt-8">
           Already have an account?{' '}
           <Link to="/login" className="font-bold text-amber-500 hover:text-amber-400 transition-colors">
             Log in
@@ -252,7 +252,7 @@ export default function Signup() {
       </div>
 
       {/* Back to Home Link */}
-      <Link to="/" className="text-xs text-gray-500 hover:text-white transition-colors mt-8 font-sans flex items-center gap-1.5 z-10">
+      <Link to="/" className="text-sm text-gray-400 hover:text-white transition-colors mt-8 font-sans flex items-center gap-1.5 z-10">
         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>

@@ -55,7 +55,7 @@ export default function Login() {
       
       // Simulated redirect to dashboard
       setTimeout(() => {
-        navigate('/')
+        navigate('/dashboard')
       }, 1500)
     }, 1500)
   }
@@ -95,7 +95,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-5 text-left">
           {/* Email field */}
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 font-display">
+            <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2 font-display">
               Email Address
             </label>
             <input
@@ -105,14 +105,14 @@ export default function Login() {
               value={formData.email}
               onChange={handleChange}
               disabled={isLoading}
-              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-xs text-white placeholder-gray-600 focus:outline-none transition-all font-sans ${
+              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all font-sans ${
                 errors.email 
                   ? 'border-rose-500/50 focus:border-rose-500' 
                   : 'border-white/10 focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20'
               }`}
             />
             {errors.email && (
-              <p className="text-rose-400 text-[10px] font-sans mt-1.5 flex items-center gap-1">
+              <p className="text-rose-400 text-xs font-sans mt-1.5 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
                 {errors.email}
               </p>
@@ -122,10 +122,10 @@ export default function Login() {
           {/* Password field */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest font-display">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest font-display">
                 Password
               </label>
-              <a href="#" className="text-[10px] font-bold text-amber-500 hover:text-amber-400 transition-colors uppercase tracking-widest font-display">
+              <a href="#" className="text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors uppercase tracking-widest font-display">
                 Forgot?
               </a>
             </div>
@@ -136,14 +136,14 @@ export default function Login() {
               value={formData.password}
               onChange={handleChange}
               disabled={isLoading}
-              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-xs text-white placeholder-gray-600 focus:outline-none transition-all font-sans ${
+              className={`w-full bg-black/60 border rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all font-sans ${
                 errors.password 
                   ? 'border-rose-500/50 focus:border-rose-500' 
                   : 'border-white/10 focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20'
               }`}
             />
             {errors.password && (
-              <p className="text-rose-400 text-[10px] font-sans mt-1.5 flex items-center gap-1">
+              <p className="text-rose-400 text-xs font-sans mt-1.5 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
                 {errors.password}
               </p>
@@ -154,7 +154,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-4 rounded-xl font-bold text-xs uppercase tracking-wider text-black bg-white hover:bg-neutral-200 transition-all shadow-md mt-8 flex items-center justify-center gap-2 ${
+            className={`w-full py-4 rounded-xl font-bold text-sm uppercase tracking-wider text-black bg-white hover:bg-neutral-200 transition-all shadow-md mt-8 flex items-center justify-center gap-2 ${
               isLoading ? 'opacity-80 cursor-wait' : ''
             }`}
           >
@@ -182,13 +182,13 @@ export default function Login() {
 
         {/* Social logins */}
         <div className="grid grid-cols-2 gap-3">
-          <button className="flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.05] rounded-xl py-3 text-xs font-bold font-sans text-gray-300 transition-all">
+          <button className="flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.05] rounded-xl py-3 text-sm font-bold font-sans text-gray-300 transition-all">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12.24 10.285V13.4h6.887C18.2 15.614 15.645 18 12.24 18c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.86 0 3.55.72 4.86 1.91l2.45-2.45C17.99 1.96 15.29 1 12.24 1 6.72 1 2.24 5.48 2.24 11s4.48 10 10 10c5.77 0 9.63-4.06 9.63-9.8 0-.665-.08-1.3-.23-1.915H12.24z"/>
             </svg>
             Google
           </button>
-          <button className="flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.05] rounded-xl py-3 text-xs font-bold font-sans text-gray-300 transition-all">
+          <button className="flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.05] rounded-xl py-3 text-sm font-bold font-sans text-gray-300 transition-all">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
               <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.164 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
             </svg>
@@ -197,7 +197,7 @@ export default function Login() {
         </div>
 
         {/* Toggle link */}
-        <p className="text-center text-xs text-gray-500 font-sans mt-10">
+        <p className="text-center text-sm text-gray-400 font-sans mt-10">
           Don't have an account?{' '}
           <Link to="/signup" className="font-bold text-amber-500 hover:text-amber-400 transition-colors">
             Sign up
@@ -206,7 +206,7 @@ export default function Login() {
       </div>
 
       {/* Back to Home Link */}
-      <Link to="/" className="text-xs text-gray-500 hover:text-white transition-colors mt-8 font-sans flex items-center gap-1.5 z-10">
+      <Link to="/" className="text-sm text-gray-400 hover:text-white transition-colors mt-8 font-sans flex items-center gap-1.5 z-10">
         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>

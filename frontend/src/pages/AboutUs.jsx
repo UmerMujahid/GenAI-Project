@@ -28,15 +28,15 @@ export default function AboutUs() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto mt-16 text-left">
             <div className="p-6 rounded-2xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm">
               <span className="text-3xl font-black text-white block mb-1">98%</span>
-              <span className="text-xs text-gray-500 font-sans">Match Score Accuracy</span>
+              <span className="text-sm text-gray-400 font-semibold font-sans">Match Score Accuracy</span>
             </div>
             <div className="p-6 rounded-2xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm">
               <span className="text-3xl font-black text-white block mb-1">10x</span>
-              <span className="text-xs text-gray-500 font-sans">Search Speed Multiplier</span>
+              <span className="text-sm text-gray-400 font-semibold font-sans">Search Speed Multiplier</span>
             </div>
             <div className="col-span-2 md:col-span-1 p-6 rounded-2xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm">
               <span className="text-3xl font-black text-white block mb-1">100%</span>
-              <span className="text-xs text-gray-500 font-sans">Student-First Automation</span>
+              <span className="text-sm text-gray-400 font-semibold font-sans">Student-First Automation</span>
             </div>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function AboutUs() {
             <h2 className="text-3xl md:text-4xl font-black text-white">
               Get in touch with us.
             </h2>
-            <p className="text-xs text-gray-400 max-w-md mx-auto mt-4 font-sans leading-relaxed">
+            <p className="text-sm text-gray-300 max-w-md mx-auto mt-4 font-sans leading-relaxed">
               Have questions about how the multi-agent system works or want to partner with us? We'd love to hear from you.
             </p>
           </div>
@@ -76,7 +76,7 @@ export default function AboutUs() {
 
               <div className="text-left mb-8">
                 <h3 className="text-xl font-bold text-white mb-2">Email Address</h3>
-                <p className="text-xs text-gray-400 font-sans leading-relaxed mb-4">
+                <p className="text-sm text-gray-300 font-sans leading-relaxed mb-4">
                   Send us a mail and our team will get back to you within 24 hours.
                 </p>
                 <a 
@@ -89,7 +89,7 @@ export default function AboutUs() {
 
               <a 
                 href="mailto:umermujahid4738@gmail.com"
-                className="w-full text-center py-3.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-amber-500/35 text-xs font-bold uppercase tracking-wider text-white transition-all font-sans"
+                className="w-full text-center py-3.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-amber-500/35 text-sm font-bold uppercase tracking-wider text-white transition-all font-sans"
               >
                 Send Email
               </a>
@@ -107,7 +107,7 @@ export default function AboutUs() {
 
               <div className="text-left mb-8">
                 <h3 className="text-xl font-bold text-white mb-2">Phone Number</h3>
-                <p className="text-xs text-gray-400 font-sans leading-relaxed mb-4">
+                <p className="text-sm text-gray-300 font-sans leading-relaxed mb-4">
                   Feel free to call us directly for any urgent inquiries or direct partnerships.
                 </p>
                 <a 
@@ -120,7 +120,7 @@ export default function AboutUs() {
 
               <a 
                 href="tel:+923336724862"
-                className="w-full text-center py-3.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-purple-500/35 text-xs font-bold uppercase tracking-wider text-white transition-all font-sans"
+                className="w-full text-center py-3.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-purple-500/35 text-sm font-bold uppercase tracking-wider text-white transition-all font-sans"
               >
                 Call Us
               </a>
