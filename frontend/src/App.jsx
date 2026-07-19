@@ -5,7 +5,8 @@ import AboutUs from './pages/AboutUs'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
-
+import ResumeUploadPage from './pages/ResumeUploadPage'
+import PreferencesPage from './pages/PreferencesPage'
 function App() {
   return (
     <Router>
@@ -16,6 +17,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/resume-upload" element={<ResumeUploadPage />} />
+          <Route path="/preferences" element={<PreferencesPage />} />
         </Routes>
       </div>
     </Router>
