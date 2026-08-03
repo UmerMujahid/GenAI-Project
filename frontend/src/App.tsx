@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import ScrollToTop from './components/ScrollToTop'
 import HybridLandingPage from './components/HybridLandingPage'
 import AboutUs from './pages/AboutUs'
 import Login from './pages/Login'
@@ -9,6 +10,7 @@ import Dashboard from './pages/Dashboard'
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen bg-[#030303]">
         <Routes>
           <Route path="/" element={<HybridLandingPage />} />

@@ -1,7 +1,10 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from app.core.config import settings
-from app.models import User, Resume, Internship, Application
+from app.models.user import User
+from app.models.resume import Resume
+from app.models.internship import Internship
+from app.models.application import Application
 
 async def init_db():
     """
