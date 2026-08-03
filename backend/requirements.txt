@@ -1,10 +1,11 @@
-﻿# ── Web Framework ──────────────────────────────────────────
+# ── Web Framework ──────────────────────────────────────────
 fastapi==0.111.0
 uvicorn[standard]==0.30.1
 
 # ── Database (MongoDB) ─────────────────────────────────────
 motor==3.4.0              # Async MongoDB driver for FastAPI
 beanie==1.26.0            # MongoDB ODM (built on Motor)
+pymongo<4.7.0             # Compatible PyMongo version for Motor 3.4.0
 
 # ── Auth ───────────────────────────────────────────────────
 python-jose[cryptography]==3.3.0   # JWT creation & verification

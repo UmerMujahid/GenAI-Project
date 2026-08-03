@@ -35,6 +35,11 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(internships_router, prefix="/api")
 app.include_router(resume_router, prefix="/api")
 
+
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the AI Internship Navigator Backend"}
+
 @app.get("/api/health")
 async def health_check():
     return {"status": "online", "database": settings.DB_NAME}

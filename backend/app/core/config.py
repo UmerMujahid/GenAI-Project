@@ -1,8 +1,13 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from pydantic import Field, AliasChoices
+
 class Settings(BaseSettings):
     # MongoDB
-    MONGO_URI: str = "mongodb://localhost:27017"
+    MONGO_URI: str = Field(
+        default="mongodb://localhost:27017",
+        validation_alias=AliasChoices("MONGO_URI", "MONGODB_URI")
+    )
     DB_NAME: str = "internship_navigator"
 
     # JWT Authentication
