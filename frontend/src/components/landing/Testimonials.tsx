@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card'
+import { Card, CardContent } from '../ui/Card'
 
 export default function Testimonials() {
   const testimonials = [
@@ -24,18 +24,18 @@ export default function Testimonials() {
   ]
 
   return (
-    <section id="testimonials" className="relative py-24 bg-[#030303] border-b border-white/5 overflow-hidden z-10">
+    <section id="testimonials" className="relative py-14 md:py-16 bg-[#0d0e12] border-b border-white/20 overflow-hidden z-10">
       {/* Background glow overlay */}
-      <div className="absolute bottom-[20%] left-[-10%] w-[350px] h-[350px] rounded-full bg-purple-900/10 blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-[20%] left-[-10%] w-[350px] h-[350px] rounded-full bg-purple-900/20 blur-[100px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Header */}
-        <div className="text-center mb-16">
-          <span className="text-xs md:text-sm font-display font-black text-amber-500 uppercase tracking-wider block mb-4">
+        <div className="text-center mb-10">
+          <span className="text-xs md:text-sm font-display font-black text-amber-400 uppercase tracking-widest block mb-2">
             TESTIMONIALS
           </span>
-          <h2 className="text-3xl md:text-4xl font-display font-black text-white">
+          <h2 className="text-2xl md:text-4xl font-display font-black text-white">
             What our users say.
           </h2>
         </div>
@@ -45,25 +45,24 @@ export default function Testimonials() {
           {testimonials.map((t, idx) => (
             <Card 
               key={idx} 
-              className="hover:border-amber-500/35 hover:shadow-[0_0_25px_rgba(245,158,11,0.06)] bg-neutral-900/60 border-white/20 flex flex-col justify-between p-6 transition-all duration-500 ring-1 ring-white/5"
+              className="border border-white/20 bg-neutral-900/90 hover:border-amber-500/50 shadow-2xl flex flex-col justify-between p-6 transition-all duration-300"
             >
               <CardContent className="p-0 text-left">
-                {/* Quotes symbol */}
-                <span className="text-4xl font-serif text-amber-500/25 block leading-none select-none mb-1">“</span>
-                <p className="text-xs text-gray-300 leading-relaxed font-sans -mt-2">
+                <span className="text-4xl font-serif text-amber-500/30 block leading-none select-none mb-1">“</span>
+                <p className="text-xs md:text-sm text-gray-200 leading-relaxed font-display font-medium">
                   {t.quote}
                 </p>
               </CardContent>
 
               {/* Author Footer */}
-              <div className="border-t border-white/10 pt-5 mt-6 text-left flex flex-col gap-1">
-                <span className="text-xs font-display font-extrabold text-white">
+              <div className="border-t border-white/10 pt-4 mt-5 text-left flex flex-col gap-0.5">
+                <span className="text-sm font-display font-black text-white">
                   {t.name}
                 </span>
-                <span className="text-xs font-display font-black text-amber-500 uppercase tracking-wider">
+                <span className="text-[11px] font-display font-black text-amber-400 uppercase tracking-wider">
                   {t.role}
                 </span>
-                <span className="text-[9px] text-gray-500 font-sans font-medium">
+                <span className="text-[11px] text-gray-300 font-sans font-semibold">
                   {t.university}
                 </span>
               </div>

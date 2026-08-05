@@ -4,7 +4,7 @@ import techBg from '../../assets/tech_bg.png'
 export default function Hero() {
   const [tilt, setTilt] = useState({ x: -10, y: 8 })
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget.getBoundingClientRect()
     const x = (e.clientX - card.left) / card.width - 0.5
     const y = (e.clientY - card.top) / card.height - 0.5
@@ -16,45 +16,42 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 overflow-hidden z-10">
+    <section className="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden z-10 bg-[#0d0e12]">
       {/* Background Tech Network Backdrop */}
       <div className="absolute top-0 left-0 right-0 h-[100%] pointer-events-none overflow-hidden z-0">
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-45 scale-[1.01]"
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-55 scale-[1.01]"
           style={{ backgroundImage: `url(${techBg})` }}
         ></div>
-        {/* Gradients to transition and bound the hero bottom */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-[#030303]/60 to-black/80"></div>
-        {/* Tech Grid overlay */}
-        <div className="absolute inset-0 grid-bg-tech opacity-30"></div>
-        {/* Soft glowing ambient lighting orbs to brighten the background */}
-        <div className="absolute top-[20%] left-1/4 w-[350px] h-[350px] rounded-full bg-purple-600/10 blur-[90px]"></div>
-        <div className="absolute top-[30%] right-1/4 w-[300px] h-[300px] rounded-full bg-amber-500/10 blur-[80px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0e12] via-[#0d0e12]/70 to-black/80"></div>
+        <div className="absolute inset-0 grid-bg-tech opacity-40"></div>
+        <div className="absolute top-[20%] left-1/4 w-[400px] h-[400px] rounded-full bg-purple-600/20 blur-[100px]"></div>
+        <div className="absolute top-[30%] right-1/4 w-[350px] h-[350px] rounded-full bg-amber-500/20 blur-[90px]"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center z-10">
         {/* Left Headline Column */}
         <div className="lg:col-span-7 text-left flex flex-col items-start pt-8">
-          <h1 className="text-4xl md:text-6xl font-display font-black leading-[1.05] tracking-tight text-white mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-[53px] font-display font-black leading-[1.1] tracking-tight text-white mb-6 pr-2">
             The Complete Stack <br />
             for Smarter{' '}
-            <span className="italic font-light text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-200 to-white">
+            <span className="italic font-light text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-200 to-white inline-block pr-1">
               Internship Navigation.
             </span>
           </h1>
 
-          <p className="text-xs md:text-sm text-gray-300 max-w-xl leading-relaxed mb-8">
-            Automate your internship search across Pakistan. Our multi-agent system scrapes listings from LinkedIn, Rozee.pk, and Mustakbil, calculates resume match scores, tailors your resume for every role, and tracks applications — all in one place.
+          <p className="text-sm md:text-base font-display font-medium text-gray-200 max-w-xl leading-relaxed mb-6">
+            Automate your internship search across Pakistan. Our 5-agent AI stack parses your resume, scrapes top job portals, scores match fit, tailors your profile, and tracks applications — all in one place.
           </p>
 
           <div className="flex flex-wrap gap-4 items-center mb-4 w-full sm:w-auto">
-            <button className="w-full sm:w-auto px-6 py-3 rounded bg-white text-black font-semibold text-xs tracking-wider uppercase hover:bg-neutral-200 shadow-xl transition-all flex items-center justify-center gap-2">
+            <button className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-extrabold text-sm tracking-wider uppercase shadow-xl transition-all flex items-center justify-center gap-2">
               Start Navigation
-              <svg className="w-3.5 h-3.5 transform -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 transform -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </button>
-            <button className="w-full sm:w-auto px-5 py-3 rounded border border-white/10 hover:border-white/30 text-gray-300 hover:text-white font-semibold text-xs tracking-wider uppercase transition-all duration-300">
+            <button className="w-full sm:w-auto px-7 py-4 rounded-xl border border-white/20 hover:border-white/40 text-gray-100 hover:text-white font-bold text-sm tracking-wider uppercase transition-all duration-300">
               Watch Demo
             </button>
           </div>
@@ -69,103 +66,83 @@ export default function Hero() {
               transform: `perspective(1000px) rotateY(${tilt.x}deg) rotateX(${tilt.y}deg)`,
               transition: 'transform 0.15s ease-out',
             }}
-            className="relative w-full max-w-[420px] rounded-2xl border border-white/15 bg-neutral-950/80 backdrop-blur-xl p-6 shadow-2xl hover:border-amber-500/30 duration-300 ring-1 ring-white/10 select-none"
+            className="relative w-full max-w-[420px] rounded-3xl border border-white/20 bg-neutral-900/90 backdrop-blur-2xl p-6 shadow-2xl hover:border-amber-500/50 duration-300 select-none"
           >
             {/* Header portion */}
-            <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/5">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/10">
               <div>
-                <div className="text-xs md:text-sm font-display text-amber-500 uppercase tracking-wider font-extrabold">APPLICATION TRACKER</div>
-                <div className="text-base font-display font-extrabold text-white mt-0.5">Autumn 2026 · Live</div>
+                <div className="text-sm font-display text-amber-400 uppercase tracking-widest font-black">APPLICATION TRACKER</div>
+                <div className="text-lg font-display font-extrabold text-white mt-0.5">Autumn 2026 · Live Pipeline</div>
               </div>
-              <div className="w-6 h-6 rounded-full bg-neutral-900 border border-white/15 flex items-center justify-center">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-md shadow-amber-500/50"></span>
+              <div className="w-8 h-8 rounded-full bg-neutral-950 border border-white/20 flex items-center justify-center">
+                <span className="w-3 h-3 rounded-full bg-amber-500 shadow-md shadow-amber-500/50"></span>
               </div>
             </div>
 
             {/* List entries */}
             <div className="space-y-3">
-              {/* Anthropic */}
-              <div className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded bg-neutral-900 border border-white/10 flex items-center justify-center font-display font-black text-xs text-amber-500">
+                  <div className="w-9 h-9 rounded-xl bg-neutral-950 border border-white/20 flex items-center justify-center font-display font-black text-sm text-amber-400">
                     A
                   </div>
-                  <div>
-                    <div className="text-[11px] font-bold text-white">Anthropic</div>
-                    <div className="text-[9px] text-gray-500 font-mono mt-0.5">RESEARCH ENG · INTERN</div>
+                  <div className="text-left">
+                    <div className="text-sm font-bold text-white">Systems Limited</div>
+                    <div className="text-xs text-gray-300 font-mono mt-0.5">AI ENGINEER · INTERN</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[8px] font-mono font-bold">
-                  <span className="w-1 h-1 rounded-full bg-emerald-400"></span>
-                  Interview Scheduled
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  Interview
                 </div>
               </div>
 
-              {/* Stripe */}
-              <div className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded bg-neutral-900 border border-white/10 flex items-center justify-center font-display font-black text-xs text-amber-500">
-                    S
+                  <div className="w-9 h-9 rounded-xl bg-neutral-950 border border-white/20 flex items-center justify-center font-display font-black text-sm text-amber-400">
+                    D
                   </div>
-                  <div>
-                    <div className="text-[11px] font-bold text-white">Stripe</div>
-                    <div className="text-[9px] text-gray-500 font-mono mt-0.5">PRODUCT ENG · INTERN</div>
+                  <div className="text-left">
+                    <div className="text-sm font-bold text-white">Devsinc</div>
+                    <div className="text-xs text-gray-300 font-mono mt-0.5">FULL-STACK · INTERN</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-blue-500/20 bg-blue-500/10 text-blue-400 text-[8px] font-mono font-bold">
-                  <span className="w-1 h-1 rounded-full bg-blue-400"></span>
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/20 text-blue-300 text-xs font-mono font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
                   Applied
                 </div>
               </div>
 
-              {/* Figma */}
-              <div className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded bg-neutral-900 border border-white/10 flex items-center justify-center font-display font-black text-xs text-amber-500">
-                    F
+                  <div className="w-9 h-9 rounded-xl bg-neutral-950 border border-white/20 flex items-center justify-center font-display font-black text-sm text-amber-400">
+                    A
                   </div>
-                  <div>
-                    <div className="text-[11px] font-bold text-white">Figma</div>
-                    <div className="text-[9px] text-gray-500 font-mono mt-0.5">DESIGN SYSTEMS · INTERN</div>
+                  <div className="text-left">
+                    <div className="text-sm font-bold text-white">Arbisoft</div>
+                    <div className="text-xs text-gray-300 font-mono mt-0.5">BACKEND FASTAPI · INTERN</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-amber-500/20 bg-amber-500/10 text-amber-400 text-[8px] font-mono font-bold">
-                  <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse"></span>
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/20 text-amber-300 text-xs font-mono font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
                   Offer
-                </div>
-              </div>
-
-              {/* Linear */}
-              <div className="relative flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded bg-neutral-900 border border-white/10 flex items-center justify-center font-display font-black text-xs text-amber-500">
-                    L
-                  </div>
-                  <div>
-                    <div className="text-[11px] font-bold text-white">Linear</div>
-                    <div className="text-[9px] text-gray-500 font-mono mt-0.5">PLATFORM · INTERN</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-purple-500/20 bg-purple-500/10 text-purple-400 text-[8px] font-mono font-bold">
-                  <span className="w-1 h-1 rounded-full bg-purple-400"></span>
-                  In Review
                 </div>
               </div>
             </div>
 
-            {/* Circular Dial Match Score Overlay */}
-            <div className="absolute bottom-[-15px] left-[-20px] w-24 h-24 rounded-xl border border-amber-500/25 bg-black/95 p-3 shadow-xl backdrop-blur-xl flex flex-col items-center justify-center animate-float-slow ring-1 ring-amber-500/10">
-              <svg className="w-9 h-9 transform -rotate-90" viewBox="0 0 36 36">
+            {/* Perfectly Centered Match Score Overlay */}
+            <div className="absolute bottom-[-15px] left-[-20px] w-28 h-28 rounded-2xl border border-amber-500/40 bg-neutral-950 shadow-2xl backdrop-blur-xl flex items-center justify-center">
+              <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
                 <path
-                  className="text-white/5"
-                  strokeWidth="2.5"
+                  className="text-white/10"
+                  strokeWidth="3"
                   stroke="currentColor"
                   fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 />
                 <path
-                  className="text-amber-500"
-                  strokeWidth="2.5"
+                  className="text-amber-400"
+                  strokeWidth="3"
                   strokeDasharray="94, 100"
                   strokeLinecap="round"
                   stroke="currentColor"
@@ -173,8 +150,10 @@ export default function Hero() {
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 />
               </svg>
-              <div className="absolute top-[28px] text-[10px] font-mono font-extrabold text-white">94%</div>
-              <div className="text-[7px] text-gray-400 font-mono tracking-widest uppercase mt-1">MATCH</div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pt-1 pointer-events-none">
+                <span className="text-sm font-mono font-black text-white leading-none">94%</span>
+                <span className="text-[8px] text-amber-400 font-mono font-bold tracking-widest uppercase mt-1">MATCH</span>
+              </div>
             </div>
           </div>
         </div>

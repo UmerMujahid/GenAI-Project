@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import techBg from '../../assets/tech_bg.png'
 
 export default function HowItWorks() {
   const [activeStep, setActiveStep] = useState(1)
@@ -7,117 +6,110 @@ export default function HowItWorks() {
   const steps = [
     {
       num: 1,
-      title: 'Upload & Configure',
-      description: 'Upload your current resume and specify your target preferences: role (e.g. Frontend, Fullstack), cities, and remote preference.',
-      tag: 'Step 1: Input Setup'
+      tag: 'Step 01',
+      title: 'Resume Parser',
+      subtitle: 'PDF Component Extraction',
+      description: 'Parses your uploaded PDF resume using PyMuPDF & Regex to extract contact details, skills, education, experience, and certifications.'
     },
     {
       num: 2,
-      title: 'Scrape & Tailor',
-      description: 'Playwright scraper fetches internships from LinkedIn, Rozee, and Mustakbil. Matching agents score them, and Tailoring agents rewrite your resume to fit.',
-      tag: 'Step 2: Processing & Matching'
+      tag: 'Step 02',
+      title: 'Internship Finder',
+      subtitle: 'Playwright Scraper',
+      description: 'Combs through LinkedIn, Rozee.pk, and Mustakbil to discover real-time software engineering internship opportunities across Pakistan.'
     },
     {
       num: 3,
-      title: 'Apply & Track',
-      description: 'Generates custom cover letters per job. Track applications automatically in the dashboard (Applied, Interview, Offer) without Excel sheets.',
-      tag: 'Step 3: Track Outcomes'
+      tag: 'Step 03',
+      title: 'Resume Matching',
+      subtitle: 'LLM Semantic Fit Score',
+      description: 'Compares your parsed profile against extracted job descriptions, generating a percentage match score and flagging skill gaps.'
+    },
+    {
+      num: 4,
+      tag: 'Step 04',
+      title: 'Resume Tailor',
+      subtitle: 'Targeted Profile Alignment',
+      description: 'Rewrites and customizes your project bullet points and summary statement to highlight relevant skills for each position.'
+    },
+    {
+      num: 5,
+      tag: 'Step 05',
+      title: 'Cover Letter',
+      subtitle: 'Bespoke Application Copy',
+      description: 'Drafts tailored cover letters contextualizing your academic milestones, projects, and motivation specifically for the employer.'
     }
   ]
 
   return (
-    <section id="works" className="relative py-24 bg-[#030303] border-b border-white/5 z-10">
+    <section id="works" className="relative py-14 md:py-16 bg-[#0d0e12] border-b border-white/20 z-10">
       {/* Background ambient lighting */}
-      <div className="absolute top-[20%] right-[-10%] w-[300px] h-[300px] rounded-full bg-purple-900/5 blur-[90px] pointer-events-none"></div>
+      <div className="absolute top-[20%] right-[-10%] w-[350px] h-[350px] rounded-full bg-purple-900/20 blur-[100px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Section Header */}
-        <div className="text-left mb-16">
-          <span className="text-xs md:text-sm font-display font-black text-amber-500 uppercase tracking-wider block mb-3">
+        <div className="text-center mb-12">
+          <span className="text-xs md:text-sm font-display font-black text-amber-400 uppercase tracking-widest block mb-2">
             HOW IT WORKS
           </span>
-          <h2 className="text-4xl font-display font-black text-white leading-tight">
-            One resume to upload, <br />
-            <span className="text-gray-400 font-light">three steps to the offer.</span>
+          <h2 className="text-2xl md:text-4xl font-display font-black text-white leading-tight">
+            5 Automated Steps to Your Target Internship
           </h2>
+          <p className="text-xs md:text-sm text-gray-300 font-display font-medium max-w-xl mx-auto mt-2">
+            Our multi-agent pipeline handles extraction, discovery, scoring, tailoring, and copy generation in sequence.
+          </p>
         </div>
 
-        {/* Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          {/* Left Visual Column */}
-          <div className="lg:col-span-6 relative rounded-2xl border border-white/15 overflow-hidden shadow-2xl h-[380px] group bg-neutral-900/40">
-            {/* Background tech photo */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center opacity-30 scale-[1.02] group-hover:scale-105 transition-transform duration-[4000ms]"
-              style={{ backgroundImage: `url(${techBg})` }}
-            ></div>
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#030303] via-transparent to-black/30"></div>
-
-            {/* Overlaid Card (Refined Insight style matching sample) */}
-            <div className="absolute bottom-8 left-6 right-6 p-6 rounded-xl border border-white/20 bg-neutral-950/90 backdrop-blur-md shadow-2xl text-left transition-all duration-500 hover:border-amber-500/30">
-              <div className="flex items-center gap-2 mb-3">
-                <svg className="w-5 h-5 text-amber-400 animate-pulse-glow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                <span className="text-xs font-display font-black uppercase tracking-wider text-white">
-                  Refined Match Profile
-                </span>
-              </div>
-              <p className="text-[11px] text-gray-300 font-sans leading-relaxed mb-5">
-                Your tailored resume is compiled and ready to use — experiences and projects automatically adjusted for the Stripe Product Engineer role.
-              </p>
-              <div className="flex items-center justify-between border-t border-white/5 pt-4">
-                <span className="text-[9px] font-display font-bold text-gray-500 uppercase tracking-wider">
-                  Status: Tailor complete
-                </span>
-                <button className="px-4 py-2 rounded bg-white text-black font-semibold text-[10px] uppercase hover:bg-neutral-200 transition-colors">
-                  Use tailored version
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Steps Column */}
-          <div className="lg:col-span-6 flex flex-col gap-6">
-            {steps.map((step) => {
-              const isSelected = activeStep === step.num
-              return (
-                <div 
-                  key={step.num}
-                  onClick={() => setActiveStep(step.num)}
-                  className={`cursor-pointer text-left p-6 rounded-xl border transition-all duration-300 flex items-start gap-4 ${
-                    isSelected 
-                      ? 'bg-neutral-900/60 border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.02)] pl-8' 
-                      : 'border border-white/5 hover:border-white/20 hover:bg-white/[0.02]'
-                  }`}
-                >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-display font-extrabold text-xs shrink-0 transition-colors ${
-                    isSelected 
-                      ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20' 
-                      : 'bg-neutral-950 border border-white/10 text-gray-400'
-                  }`}>
-                    {step.num}
-                  </div>
-                  <div>
-                    {/* Changed font-mono to font-display for step subtitle */}
-                    <span className="text-xs font-display font-black tracking-wider text-amber-500 uppercase">
+        {/* 5-Step Pipeline Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {steps.map((step) => {
+            const isSelected = activeStep === step.num
+            return (
+              <div 
+                key={step.num}
+                onClick={() => setActiveStep(step.num)}
+                className={`cursor-pointer text-left p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between ${
+                  isSelected 
+                    ? 'bg-neutral-900/90 border-amber-500/60 shadow-xl ring-1 ring-amber-500/30' 
+                    : 'border-white/20 hover:border-white/40 bg-neutral-900/40'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-display font-black tracking-wider text-amber-400 uppercase">
                       {step.tag}
                     </span>
-                    <h3 className={`text-base font-display font-extrabold text-white mt-1 transition-colors ${isSelected ? 'text-white' : 'text-gray-400'}`}>
-                      {step.title}
-                    </h3>
-                    <p className="text-xs text-gray-400 leading-relaxed mt-2">
-                      {step.description}
-                    </p>
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center font-display font-black text-xs transition-colors ${
+                      isSelected 
+                        ? 'bg-amber-400 text-black shadow-md shadow-amber-500/30' 
+                        : 'bg-neutral-950 border border-white/20 text-gray-300'
+                    }`}>
+                      {step.num}
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
 
+                  <h3 className="text-base font-display font-extrabold text-white mb-1">
+                    {step.title}
+                  </h3>
+                  <span className="text-[11px] font-display font-bold text-gray-400 uppercase tracking-wide block mb-3">
+                    {step.subtitle}
+                  </span>
+
+                  <p className="text-xs text-gray-300 leading-relaxed font-display font-medium">
+                    {step.description}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-display font-bold uppercase tracking-wider text-gray-400">
+                  <span>Automated</span>
+                  <span className="text-amber-400">Agent Step</span>
+                </div>
+              </div>
+            )
+          })}
         </div>
+
       </div>
     </section>
   )

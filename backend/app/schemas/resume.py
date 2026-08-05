@@ -1,13 +1,19 @@
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 
 class ResumeResponse(BaseModel):
     id: str
     user_id: str
     filename: str
-    parsed_skills: List[str]
-    parsed_experience: List[Dict[str, Any]]
+    contact_info: Optional[Dict[str, Any]] = {}
+    skills: Optional[List[str]] = []
+    education: Optional[List[Dict[str, Any]]] = []
+    experience: Optional[List[Dict[str, Any]]] = []
+    projects: Optional[List[Dict[str, Any]]] = []
+    certifications: Optional[List[str]] = []
+    volunteer_work: Optional[List[Dict[str, Any]]] = []
+    raw_text: Optional[str] = ""
     created_at: datetime
 
     class Config:
