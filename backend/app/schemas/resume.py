@@ -6,6 +6,8 @@ class ResumeResponse(BaseModel):
     id: str
     user_id: str
     filename: str
+    summary: Optional[str] = ""
+    parser_mode: Optional[str] = "LLM Agent"
     contact_info: Optional[Dict[str, Any]] = {}
     skills: Optional[List[str]] = []
     education: Optional[List[Dict[str, Any]]] = []

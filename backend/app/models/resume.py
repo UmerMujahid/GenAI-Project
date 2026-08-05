@@ -7,7 +7,9 @@ class Resume(Document):
     user_id: PydanticObjectId
     filename: str
     raw_text: str
-    contact_info: Optional[Dict[str, Any]] = Field(default_factory=dict) # name, email, phone, linkedin, github, location
+    summary: Optional[str] = ""
+    parser_mode: Optional[str] = "LLM Agent"
+    contact_info: Optional[Dict[str, Any]] = Field(default_factory=dict)
     skills: Optional[List[str]] = Field(default_factory=list)
     education: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
     experience: Optional[List[Dict[str, Any]]] = Field(default_factory=list)

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import techBg from '../../assets/tech_bg.png'
 
 export default function Hero() {
@@ -45,15 +46,21 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-wrap gap-4 items-center mb-4 w-full sm:w-auto">
-            <button className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-extrabold text-sm tracking-wider uppercase shadow-xl transition-all flex items-center justify-center gap-2">
+            <Link
+              to="/signup"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-extrabold text-sm tracking-wider uppercase shadow-xl transition-all flex items-center justify-center gap-2"
+            >
               Start Navigation
               <svg className="w-4 h-4 transform -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
-            </button>
-            <button className="w-full sm:w-auto px-7 py-4 rounded-xl border border-white/20 hover:border-white/40 text-gray-100 hover:text-white font-bold text-sm tracking-wider uppercase transition-all duration-300">
+            </Link>
+            <a 
+              href="#works"
+              className="w-full sm:w-auto px-7 py-4 rounded-xl border border-white/20 hover:border-white/40 text-gray-100 hover:text-white font-bold text-sm tracking-wider uppercase transition-all duration-300 text-center"
+            >
               Watch Demo
-            </button>
+            </a>
           </div>
         </div>
 

@@ -112,21 +112,38 @@ export default function Dashboard() {
     setUploadError("");
     setUploadSuccessMsg("");
 
-    setParseStep("1/3 Reading PDF Document...");
-    setTimeout(() => {
-      setParseStep("2/3 Extracting Contact Info & Technical Skills...");
-      setTimeout(() => {
-        setParseStep("3/3 Structuring Experience, Education & Projects...");
-      }, 700);
-    }, 700);
+    const startTime = Date.now();
+    const steps = [
+      "1/4 Reading PDF & Initializing Agent Engine...",
+      "2/4 Extracting Contact Info, Address & Summary...",
+      "3/4 Structuring Technical Skills, Education & Experience...",
+      "4/4 Finalizing Component Verification & Syncing Profile..."
+    ];
+
+    let currentStepIndex = 0;
+    setParseStep(steps[0]);
+
+    const interval = setInterval(() => {
+      currentStepIndex = (currentStepIndex + 1) % steps.length;
+      setParseStep(steps[currentStepIndex]);
+    }, 750);
 
     try {
       const parsed = await uploadResumeApi(user.id, file);
+
+      // Ensure loader runs for AT LEAST 3.0 seconds (3000ms) for smooth user experience
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, 3000 - elapsedTime);
+      if (remainingTime > 0) {
+        await new Promise((resolve) => setTimeout(resolve, remainingTime));
+      }
+
       setResumeData(parsed);
-      setUploadSuccessMsg(`Resume "${file.name}" uploaded and parsed successfully!`);
+      setUploadSuccessMsg(`Resume "${file.name}" parsed & loaded successfully via ${parsed.parser_mode || "Agent"}!`);
     } catch (err: any) {
       setUploadError(err.response?.data?.detail || "Failed to upload and parse resume.");
     } finally {
+      clearInterval(interval);
       setUploading(false);
       setParseStep("");
     }
@@ -482,12 +499,38 @@ export default function Dashboard() {
             {/* ── PARSED RESUME EXTRACTED COMPONENTS DISPLAY ── */}
             {resumeData && (
               <div className="space-y-4">
-                <h2 className="text-lg font-black text-white font-display border-b border-white/10 pb-2 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Extracted Resume Components
-                </h2>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/10 pb-2">
+                  <h2 className="text-lg font-black text-white font-display flex items-center gap-2">
+                    <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Extracted Resume Components
+                  </h2>
+
+                  <span className={`px-3 py-1 rounded-full text-xs font-display font-bold uppercase tracking-wider flex items-center gap-1.5 border ${
+                    resumeData.parser_mode?.includes("LLM")
+                      ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
+                      : "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                  }`}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span>Mode: {resumeData.parser_mode || "LLM Agent"}</span>
+                  </span>
+                </div>
+
+                {/* 0. Professional Summary / Objective Statement */}
+                {resumeData.summary && (
+                  <div className="p-4 rounded-2xl border border-white/20 bg-neutral-900/90 shadow-xl backdrop-blur-xl space-y-1.5">
+                    <h3 className="text-sm font-display font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Professional Summary / Objective
+                    </h3>
+                    <p className="text-xs text-gray-200 font-sans leading-relaxed font-medium">
+                      {resumeData.summary}
+                    </p>
+                  </div>
+                )}
 
                 {/* 1. Contact Details Card */}
                 <div className="p-4 rounded-2xl border border-white/20 bg-neutral-900/90 shadow-xl backdrop-blur-xl space-y-2.5">
@@ -497,7 +540,7 @@ export default function Dashboard() {
                     </svg>
                     Contact Info
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs font-sans">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs font-sans">
                     <div className="bg-neutral-950/60 p-2.5 rounded-xl border border-white/10">
                       <span className="text-[10px] font-display font-bold uppercase text-gray-400 block mb-0.5">Candidate Name</span>
                       <span className="text-white font-semibold">{resumeData.contact_info?.name || "Not specified"}</span>
@@ -511,16 +554,20 @@ export default function Dashboard() {
                       <span className="text-white font-semibold">{resumeData.contact_info?.phone || "Not specified"}</span>
                     </div>
                     <div className="bg-neutral-950/60 p-2.5 rounded-xl border border-white/10">
+                      <span className="text-[10px] font-display font-bold uppercase text-gray-400 block mb-0.5">Address</span>
+                      <span className="text-white font-semibold">{resumeData.contact_info?.address || "Not specified"}</span>
+                    </div>
+                    <div className="bg-neutral-950/60 p-2.5 rounded-xl border border-white/10">
+                      <span className="text-[10px] font-display font-bold uppercase text-gray-400 block mb-0.5">Location</span>
+                      <span className="text-white font-semibold">{resumeData.contact_info?.location || "Pakistan"}</span>
+                    </div>
+                    <div className="bg-neutral-950/60 p-2.5 rounded-xl border border-white/10">
                       <span className="text-[10px] font-display font-bold uppercase text-gray-400 block mb-0.5">LinkedIn</span>
                       <span className="text-amber-400 truncate block font-mono">{resumeData.contact_info?.linkedin || "Not specified"}</span>
                     </div>
                     <div className="bg-neutral-950/60 p-2.5 rounded-xl border border-white/10">
                       <span className="text-[10px] font-display font-bold uppercase text-gray-400 block mb-0.5">GitHub</span>
                       <span className="text-purple-400 truncate block font-mono">{resumeData.contact_info?.github || "Not specified"}</span>
-                    </div>
-                    <div className="bg-neutral-950/60 p-2.5 rounded-xl border border-white/10">
-                      <span className="text-[10px] font-display font-bold uppercase text-gray-400 block mb-0.5">Location</span>
-                      <span className="text-white font-semibold">{resumeData.contact_info?.location || "Pakistan"}</span>
                     </div>
                   </div>
                 </div>

@@ -38,10 +38,13 @@ export interface ResumeData {
   id: string;
   user_id: string;
   filename: string;
+  summary?: string;
+  parser_mode?: string;
   contact_info?: {
     name?: string;
     email?: string;
     phone?: string;
+    address?: string;
     linkedin?: string;
     github?: string;
     location?: string;

@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     JWT_EXPIRE_MINUTES: int = 60
 
     # LLM Settings
+    GROQ_API_KEY: str = ""
     HF_API_TOKEN: str = ""
     OLLAMA_BASE_URL: str = "http://localhost:11434"
 
