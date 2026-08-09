@@ -91,6 +91,50 @@ export const getLatestResumeApi = async (userId: string): Promise<ResumeData | n
   return response.data;
 };
 
+export interface MatchedJobData {
+  id: string;
+  user_id: string;
+  job_api_id?: string;
+  title: string;
+  organization: string;
+  organization_url?: string;
+  apply_url?: string;
+  date_posted?: string;
+  employment_type?: string[];
+
+  salary_currency?: string;
+  salary_min?: number;
+  salary_max?: number;
+  salary_unit?: string;
+
+  work_arrangement?: string;
+  experience_level?: string;
+  education?: string[];
+  visa_sponsorship?: boolean;
+
+  key_skills?: string[];
+  core_responsibilities?: string;
+  requirements_summary?: string;
+  benefits?: string[];
+
+  match_score: number;
+  matching_skills?: string[];
+  missing_skills?: string[];
+  reasoning?: string;
+  source_platform?: string;
+  discovered_at?: string;
+}
+
+export const discoverJobsApi = async (userId: string): Promise<MatchedJobData[]> => {
+  const response = await api.post<MatchedJobData[]>(`/jobs/discover/${userId}`);
+  return response.data;
+};
+
+export const getMatchedJobsApi = async (userId: string): Promise<MatchedJobData[]> => {
+  const response = await api.get<MatchedJobData[]>(`/jobs/matched/${userId}`);
+  return response.data;
+};
+
 export const getInternshipsApi = async (platform?: string) => {
   const response = await api.get("/internships", {
     params: { platform: platform || "all" },
