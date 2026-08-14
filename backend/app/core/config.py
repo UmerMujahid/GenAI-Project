@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     # LLM Settings
     GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "openai/gpt-oss-120b"
     HF_API_TOKEN: str = ""
     RAPIDAPI_KEY: str = ""
     OLLAMA_BASE_URL: str = "http://localhost:11434"

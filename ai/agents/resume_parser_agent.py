@@ -8,9 +8,9 @@ from ai.prompts.resume_parser_prompt import resume_chat_prompt
 
 
 class ResumeParserAgent:
-    def __init__(self, groq_api_key: str = None, model_id: str = "llama-3.3-70b-versatile"):
+    def __init__(self, groq_api_key: str = None, model_id: str = "openai/gpt-oss-120b"):
         self.groq_api_key = groq_api_key or os.getenv("GROQ_API_KEY", "")
-        self.model_id = model_id
+        self.model_id = os.getenv("GROQ_MODEL", model_id)
 
     def parse_resume(self, pdf_bytes: bytes) -> dict:
         raw_text = extract_text_from_pdf(pdf_bytes)

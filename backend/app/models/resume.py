@@ -6,6 +6,7 @@ from pydantic import Field
 class Resume(Document):
     user_id: PydanticObjectId
     filename: str
+    file_hash: Optional[str] = None
     raw_text: str
     summary: Optional[str] = ""
     parser_mode: Optional[str] = "LLM Agent"

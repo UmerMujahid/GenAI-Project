@@ -1,4 +1,5 @@
 import sys
+import hashlib
 from pathlib import Path
 
 # Ensure project root is in sys.path so top-level packages like 'ai' can be imported
@@ -17,26 +18,75 @@ from ai.agents.resume_parser_agent import ResumeParserAgent
 router = APIRouter(prefix="/resume", tags=["Resume"])
 resume_agent = ResumeParserAgent(groq_api_key=settings.GROQ_API_KEY)
 
+
 @router.post("/upload", response_model=ResumeResponse, status_code=status.HTTP_201_CREATED)
 async def upload_resume(user_id: str, file: UploadFile = File(...)):
-    if not file.filename.endswith(".pdf"):
+    if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only PDF files are supported."
         )
 
     try:
+        obj_id = PydanticObjectId(user_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid user ID format.")
+
+    try:
         contents = await file.read()
-        parsed_data = resume_agent.parse_resume(contents)
+        if not contents:
+            raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+        file_hash = hashlib.sha256(contents).hexdigest()
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to read uploaded file: {str(e)}"
+        )
+
+    # 1. Check if an identical resume was already parsed for this user (by hash or filename)
+    existing_resume = await Resume.find_one(Resume.user_id == obj_id, Resume.file_hash == file_hash)
+    if not existing_resume:
+        existing_resume = await Resume.find_one(Resume.user_id == obj_id, Resume.filename == file.filename)
+
+    if existing_resume:
+        print(f"[ResumeAPI] Duplicate resume found for user {user_id} (hash: {file_hash[:10]} / file: {file.filename}). Returning existing profile.")
+        if not existing_resume.file_hash:
+            existing_resume.file_hash = file_hash
+            await existing_resume.save()
+
+        return ResumeResponse(
+            id=str(existing_resume.id),
+            user_id=str(existing_resume.user_id),
+            filename=existing_resume.filename,
+            summary=existing_resume.summary or "",
+            parser_mode=existing_resume.parser_mode or "LLM Agent",
+            contact_info=existing_resume.contact_info or {},
+            skills=existing_resume.skills or [],
+            education=existing_resume.education or [],
+            experience=existing_resume.experience or [],
+            projects=existing_resume.projects or [],
+            certifications=existing_resume.certifications or [],
+            volunteer_work=existing_resume.volunteer_work or [],
+            raw_text=existing_resume.raw_text or "",
+            created_at=existing_resume.created_at
+        )
+
+    # 2. If new resume, parse with AI Agent
+    try:
+        parsed_data = resume_agent.parse_resume(contents)
+    except Exception as e:
+        print(f"[ResumeAPI] Resume parsing error: {e}")
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to parse PDF resume with AI Agent: {str(e)}"
+            detail=f"Failed to parse PDF resume: {str(e)}"
         )
 
     resume = Resume(
-        user_id=PydanticObjectId(user_id),
+        user_id=obj_id,
         filename=file.filename,
+        file_hash=file_hash,
         raw_text=parsed_data.get("raw_text", ""),
         summary=parsed_data.get("summary", ""),
         parser_mode=parsed_data.get("parser_mode", "LLM Agent"),
@@ -66,6 +116,7 @@ async def upload_resume(user_id: str, file: UploadFile = File(...)):
         raw_text=resume.raw_text,
         created_at=resume.created_at
     )
+
 
 @router.get("/user/{user_id}", response_model=Optional[ResumeResponse])
 async def get_latest_resume(user_id: str):
