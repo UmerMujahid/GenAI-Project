@@ -15,6 +15,7 @@ from app.api.auth import router as auth_router
 from app.api.internships import router as internships_router
 from app.api.resume import router as resume_router
 from app.api.jobs import router as jobs_router
+from app.api.agents import router as agents_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -42,6 +43,7 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(internships_router, prefix="/api")
 app.include_router(resume_router, prefix="/api")
 app.include_router(jobs_router, prefix="/api")
+app.include_router(agents_router, prefix="/api")
 
 @app.get("/")
 async def root():

@@ -13,6 +13,8 @@ interface JobFinderTabProps {
   expandedJobId: string | null;
   setExpandedJobId: (id: string | null) => void;
   handleDiscoverJobs: () => void;
+  tailoringJobId: string | null;
+  onTailorResume: (job: MatchedJobData) => void;
 }
 
 const getSafeApplyUrl = (url?: string, title?: string, company?: string): string => {
@@ -34,6 +36,8 @@ export default function JobFinderTab({
   expandedJobId,
   setExpandedJobId,
   handleDiscoverJobs,
+  tailoringJobId,
+  onTailorResume,
 }: JobFinderTabProps) {
   const availableSources = [
     "all",
@@ -215,6 +219,17 @@ export default function JobFinderTab({
                         {job.date_posted ? new Date(job.date_posted).toLocaleDateString() : "Recent"}
                       </span>
 
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onTailorResume(job);
+                        }}
+                        disabled={tailoringJobId === job.id}
+                        className="px-3.5 py-1.5 rounded-xl font-display font-black text-xs bg-amber-500 hover:bg-amber-400 text-black transition-all shadow disabled:opacity-50"
+                      >
+                        {tailoringJobId === job.id ? "Tailoring..." : "Tailor Resume"}
+                      </button>
+
                       <a
                         href={getSafeApplyUrl(job.apply_url, job.title, job.organization)}
                         target="_blank"
@@ -347,6 +362,13 @@ export default function JobFinderTab({
                             className="px-4 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
                           >
                             Close
+                          </button>
+                          <button
+                            onClick={() => onTailorResume(job)}
+                            disabled={tailoringJobId === job.id}
+                            className="px-4 py-2 rounded-xl font-display font-black text-xs bg-amber-500 hover:bg-amber-400 text-black shadow transition-all disabled:opacity-50"
+                          >
+                            {tailoringJobId === job.id ? "Tailoring..." : "Tailor Resume"}
                           </button>
                           <a
                             href={getSafeApplyUrl(job.apply_url, job.title, job.organization)}
