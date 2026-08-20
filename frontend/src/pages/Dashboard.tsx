@@ -5,13 +5,17 @@ import {
   getLatestResumeApi,
   discoverJobsApi,
   getMatchedJobsApi,
+  tailorResumeApi,
+  exportTailoredResumePdfApi,
   ResumeData,
   MatchedJobData,
+  TailorResumeResult,
 } from "../services/api";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import DashboardOverview from "../components/dashboard/DashboardOverview";
 import JobFinderTab from "../components/dashboard/JobFinderTab";
 import ResumeParserTab from "../components/dashboard/ResumeParserTab";
+import TailorResumeModal from "../components/dashboard/TailorResumeModal";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -35,6 +39,11 @@ export default function Dashboard() {
   const [selectedSource, setSelectedSource] = useState("all");
   const [matchThreshold, setMatchThreshold] = useState(0);
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
+  const [tailoringJobId, setTailoringJobId] = useState<string | null>(null);
+  const [tailorResult, setTailorResult] = useState<TailorResumeResult | null>(null);
+  const [tailorError, setTailorError] = useState("");
+  const [showTailorModal, setShowTailorModal] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   // Initial Data Fetching
   useEffect(() => {
@@ -89,6 +98,57 @@ export default function Dashboard() {
       setDiscoveryError(err.response?.data?.detail || "Job discovery failed. Check server connection.");
     } finally {
       setDiscoveringJobs(false);
+    }
+  };
+
+  const handleTailorResume = async (job: MatchedJobData) => {
+    if (!resumeData?.id) {
+      setDiscoveryError("Upload a resume first so Agent 3 can tailor it to this job.");
+      setActiveTab("resume");
+      return;
+    }
+
+    setShowTailorModal(true);
+    setTailoringJobId(job.id);
+    setTailorError("");
+    setTailorResult(null);
+
+    try {
+      const result = await tailorResumeApi(resumeData.id, job.id);
+      setTailorResult(result);
+    } catch (err: any) {
+      setTailorError(err.response?.data?.detail || "Failed to tailor resume. Check backend logs.");
+    } finally {
+      setTailoringJobId(null);
+    }
+  };
+
+  const handleExportTailoredPdf = async () => {
+    if (!tailorResult) return;
+    setExportingPdf(true);
+    try {
+      await exportTailoredResumePdfApi({
+        job_title: tailorResult.job_title,
+        organization: tailorResult.organization,
+        contact_info: tailorResult.contact_info,
+        professional_summary: tailorResult.tailored.professional_summary,
+        prioritized_skills: tailorResult.tailored.prioritized_skills,
+        skill_groups: tailorResult.tailored.skill_groups,
+        projects: tailorResult.tailored.projects,
+        education: tailorResult.education,
+        experience: tailorResult.experience,
+        certifications: tailorResult.certifications,
+        achievements: tailorResult.achievements,
+        languages: tailorResult.languages,
+        volunteer_work: tailorResult.volunteer_work,
+        section_order: tailorResult.section_order,
+        subtitle: tailorResult.subtitle,
+        raw_text: tailorResult.raw_text,
+      });
+    } catch (err: any) {
+      setTailorError(err.response?.data?.detail || "PDF export failed.");
+    } finally {
+      setExportingPdf(false);
     }
   };
 
@@ -211,6 +271,8 @@ export default function Dashboard() {
             expandedJobId={expandedJobId}
             setExpandedJobId={setExpandedJobId}
             handleDiscoverJobs={handleDiscoverJobs}
+            tailoringJobId={tailoringJobId}
+            onTailorResume={handleTailorResume}
           />
         )}
 
@@ -226,6 +288,20 @@ export default function Dashboard() {
           />
         )}
       </main>
+
+      {showTailorModal && (
+        <TailorResumeModal
+          result={tailorResult}
+          loading={Boolean(tailoringJobId)}
+          error={tailorError}
+          exporting={exportingPdf}
+          onClose={() => {
+            setShowTailorModal(false);
+            setTailorError("");
+          }}
+          onExport={handleExportTailoredPdf}
+        />
+      )}
     </div>
   );
 }

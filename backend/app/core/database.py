@@ -6,6 +6,7 @@ from app.models.resume import Resume
 from app.models.internship import Internship
 from app.models.application import Application
 from app.models.matched_job import MatchedJob
+from app.models.tailored_resume import TailoredResume
 
 async def init_db():
     """
@@ -21,7 +22,8 @@ async def init_db():
             Resume,
             Internship,
             Application,
-            MatchedJob
+            MatchedJob,
+            TailoredResume,
         ]
     )
     print(f"Successfully connected to MongoDB database: '{settings.DB_NAME}'")

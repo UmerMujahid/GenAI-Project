@@ -141,3 +141,86 @@ export const getInternshipsApi = async (platform?: string) => {
   });
   return response.data;
 };
+
+export interface TailoredProject {
+  title: string;
+  bullets?: string[];
+  description?: string;
+}
+
+export interface SkillGroup {
+  category: string;
+  skills: string[];
+}
+
+export interface TailorResumeResult {
+  id: string;
+  resume_id: string;
+  job_id: string;
+  job_title: string;
+  organization: string;
+  original: {
+    summary?: string;
+    skills?: string[];
+    projects?: Array<{ title?: string; description?: string }>;
+  };
+  tailored: {
+    professional_summary: string;
+    prioritized_skills: string[];
+    skill_groups: SkillGroup[];
+    projects: TailoredProject[];
+    highlighted_keywords: string[];
+    tailoring_notes?: string;
+  };
+  contact_info?: ResumeData["contact_info"];
+  education?: ResumeData["education"];
+  experience?: ResumeData["experience"];
+  certifications?: string[] | Array<Record<string, string>>;
+  achievements?: string[] | Array<Record<string, string>>;
+  languages?: Array<{ language?: string; proficiency?: string }>;
+  volunteer_work?: Array<{ activity?: string }>;
+  section_order?: string[];
+  subtitle?: string;
+  raw_text?: string;
+  created_at?: string;
+}
+
+export const tailorResumeApi = async (resumeId: string, jobId: string): Promise<TailorResumeResult> => {
+  const response = await api.post<TailorResumeResult>("/agents/tailor-resume", {
+    resume_id: resumeId,
+    job_id: jobId,
+  });
+  return response.data;
+};
+
+export const exportTailoredResumePdfApi = async (payload: {
+  job_title?: string;
+  organization?: string;
+  contact_info?: ResumeData["contact_info"];
+  professional_summary: string;
+  prioritized_skills: string[];
+  skill_groups: SkillGroup[];
+  projects: TailoredProject[];
+  education?: ResumeData["education"];
+  experience?: ResumeData["experience"];
+  certifications?: TailorResumeResult["certifications"];
+  achievements?: TailorResumeResult["achievements"];
+  languages?: TailorResumeResult["languages"];
+  volunteer_work?: TailorResumeResult["volunteer_work"];
+  section_order?: string[];
+  subtitle?: string;
+  raw_text?: string;
+}): Promise<void> => {
+  const response = await api.post("/agents/export-resume-pdf", payload, {
+    responseType: "blob",
+  });
+  const blob = new Blob([response.data], { type: "application/pdf" });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "Tailored_Resume.pdf";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};

@@ -79,6 +79,15 @@
 }
 
 /* Grid overlay background */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease-out;
+}
+
 .grid-bg-tech {
   background-image: 
     linear-gradient(rgba(245, 158, 11, 0.02) 1px, transparent 1px),
