@@ -1,3 +1,8 @@
+"""Authentication API routes for user signup and login.
+
+Issues JWT bearer tokens after bcrypt password verification against Beanie ``User`` documents.
+"""
+
 from fastapi import APIRouter, HTTPException, status
 from app.models.user import User
 from app.schemas.user import UserCreate, UserLogin, UserResponse, Token
@@ -7,6 +12,17 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/signup", response_model=Token, status_code=status.HTTP_201_CREATED)
 async def signup(user_in: UserCreate):
+    """Register a new user and return a JWT access token.
+
+    Args:
+        user_in: Signup payload with email, password, and profile fields.
+
+    Returns:
+        Token: Bearer token plus serialized user profile.
+
+    Raises:
+        HTTPException: If the email is already registered.
+    """
     existing_user = await User.find_one(User.email == user_in.email)
     if existing_user:
         raise HTTPException(
@@ -38,6 +54,17 @@ async def signup(user_in: UserCreate):
 
 @router.post("/login", response_model=Token)
 async def login(credentials: UserLogin):
+    """Authenticate an existing user and return a JWT access token.
+
+    Args:
+        credentials: Email and plaintext password.
+
+    Returns:
+        Token: Bearer token plus serialized user profile.
+
+    Raises:
+        HTTPException: If credentials are invalid.
+    """
     user = await User.find_one(User.email == credentials.email)
     if not user or not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(

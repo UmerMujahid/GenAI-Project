@@ -1,3 +1,5 @@
+"""Beanie document model for persisted AI-generated cover letters."""
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from beanie import Document, PydanticObjectId
@@ -5,6 +7,8 @@ from pydantic import Field
 
 
 class CoverLetter(Document):
+    """MongoDB document storing a generated cover letter for a resume/job pair."""
+
     user_id: PydanticObjectId
     resume_id: PydanticObjectId
     job_id: PydanticObjectId

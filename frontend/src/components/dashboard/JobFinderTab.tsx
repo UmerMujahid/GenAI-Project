@@ -1,6 +1,9 @@
 import React from "react";
 import { MatchedJobData } from "../../services/api";
 
+/**
+ * Props for the Job Finder tab that lists scored matches and agent actions.
+ */
 interface JobFinderTabProps {
   matchedJobs: MatchedJobData[];
   discoveringJobs: boolean;
@@ -19,6 +22,9 @@ interface JobFinderTabProps {
   onGenerateCoverLetter: (job: MatchedJobData) => void;
 }
 
+/**
+ * Normalize apply URLs and fall back to a Google search when scrapers return empty values.
+ */
 const getSafeApplyUrl = (url?: string, title?: string, company?: string): string => {
   if (!url || url.toLowerCase() === "nan" || url.toLowerCase() === "null" || url.endsWith("/nan")) {
     return `https://www.google.com/search?q=${encodeURIComponent(`${title || ""} ${company || ""} jobs Pakistan`)}`;
@@ -26,6 +32,14 @@ const getSafeApplyUrl = (url?: string, title?: string, company?: string): string
   return url.startsWith("http") ? url : `https://${url}`;
 };
 
+/**
+ * Job Finder dashboard tab.
+ *
+ * Renders filtered matched jobs with expand/collapse details and actions for
+ * Tailor Resume and Generate Cover Letter.
+ *
+ * @param props - Job list state, filters, and agent action callbacks.
+ */
 export default function JobFinderTab({
   matchedJobs,
   discoveringJobs,
@@ -192,7 +206,7 @@ export default function JobFinderTab({
                               onClick={(e) => e.stopPropagation()}
                               className="text-[11px] text-gray-400 hover:text-white underline"
                             >
-                              Website ↗
+                              Website
                             </a>
                           )}
                         </div>
@@ -242,7 +256,7 @@ export default function JobFinderTab({
                         disabled={coverLetterJobId === job.id}
                         className="px-3.5 py-1.5 rounded-xl font-display font-black text-xs bg-amber-500 hover:bg-amber-400 text-black transition-all shadow disabled:opacity-50"
                       >
-                        {coverLetterJobId === job.id ? "Drafting..." : "Cover Letter"}
+                        {coverLetterJobId === job.id ? "Drafting..." : "Generate Cover Letter"}
                       </button>
 
                       <a
@@ -252,7 +266,7 @@ export default function JobFinderTab({
                         onClick={(e) => e.stopPropagation()}
                         className="px-3.5 py-1.5 rounded-xl font-display font-black text-xs bg-amber-500 hover:bg-amber-400 text-black transition-all shadow"
                       >
-                        Apply ↗
+                        Apply
                       </a>
 
                       <button
@@ -301,7 +315,7 @@ export default function JobFinderTab({
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 space-y-2">
                           <p className="text-xs font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1.5 font-display">
-                            <span>✓</span>
+                            <span className="font-black">+</span>
                             <span>Matching Skills in Resume ({job.matching_skills?.length || 0}):</span>
                           </p>
                           {job.matching_skills && job.matching_skills.length > 0 ? (
@@ -319,7 +333,7 @@ export default function JobFinderTab({
 
                         <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 space-y-2">
                           <p className="text-xs font-black text-rose-400 uppercase tracking-wider flex items-center gap-1.5 font-display">
-                            <span>✗</span>
+                            <span className="font-black">-</span>
                             <span>Missing Skills / Gaps to Learn ({job.missing_skills?.length || 0}):</span>
                           </p>
                           {job.missing_skills && job.missing_skills.length > 0 ? (
@@ -390,7 +404,7 @@ export default function JobFinderTab({
                             disabled={coverLetterJobId === job.id}
                             className="px-4 py-2 rounded-xl font-display font-black text-xs bg-amber-500 hover:bg-amber-400 text-black shadow transition-all disabled:opacity-50"
                           >
-                            {coverLetterJobId === job.id ? "Drafting..." : "Cover Letter"}
+                            {coverLetterJobId === job.id ? "Drafting..." : "Generate Cover Letter"}
                           </button>
                           <a
                             href={getSafeApplyUrl(job.apply_url, job.title, job.organization)}
@@ -398,7 +412,7 @@ export default function JobFinderTab({
                             rel="noopener noreferrer"
                             className="px-6 py-2.5 rounded-xl font-display font-black text-xs sm:text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 text-black shadow-lg shadow-amber-500/20 transition-all flex items-center gap-1.5"
                           >
-                            Apply on Career Portal ↗
+                            Apply on Career Portal
                           </a>
                         </div>
                       </div>

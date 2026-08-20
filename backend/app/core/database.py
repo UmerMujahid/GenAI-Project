@@ -1,3 +1,5 @@
+"""MongoDB connection bootstrap using Motor and Beanie ODM document registration."""
+
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from app.core.config import settings
@@ -12,6 +14,9 @@ from app.models.cover_letter import CoverLetter
 async def init_db():
     """
     Initialize MongoDB connection using Motor and register Beanie document models.
+
+    Returns:
+        None
     """
     client = AsyncIOMotorClient(settings.MONGO_URI)
     db = client[settings.DB_NAME]

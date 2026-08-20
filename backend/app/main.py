@@ -1,3 +1,8 @@
+"""FastAPI application entrypoint for AI Internship Navigator.
+
+Configures CORS, registers API routers, and initializes MongoDB/Beanie on startup.
+"""
+
 import sys
 from pathlib import Path
 
@@ -19,6 +24,7 @@ from app.api.agents import router as agents_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Application lifespan hook: connect MongoDB before serving requests."""
     await init_db()
     yield
 

@@ -1,3 +1,9 @@
+"""Job discovery and matched-job retrieval API routes.
+
+Orchestrates ``JobDiscoveryAgent`` (JobSpy + Groq scoring) and persists
+``MatchedJob`` documents for authenticated dashboard clients.
+"""
+
 import sys
 from pathlib import Path
 import urllib.parse
@@ -24,7 +30,16 @@ job_agent = JobDiscoveryAgent(
 
 
 def _clean_apply_url(apply_url: str, title: str, org: str) -> str:
-    """Ensure URL is always a valid absolute HTTP/HTTPS link, never 'nan' or empty"""
+    """Normalize apply links to absolute HTTP(S) URLs.
+
+    Args:
+        apply_url: Raw URL from the scraper (may be empty or ``nan``).
+        title: Job title used when building a Google search fallback.
+        org: Organization name used in the fallback search query.
+
+    Returns:
+        str: A valid absolute apply URL or Google Jobs search fallback.
+    """
     if not apply_url or str(apply_url).strip().lower() in ["nan", "none", "null", "undefined", ""]:
         search_query = f"{title} {org} jobs Pakistan"
         return f"https://www.google.com/search?q={urllib.parse.quote(search_query)}"
@@ -36,7 +51,15 @@ def _clean_apply_url(apply_url: str, title: str, org: str) -> str:
 
 
 def _determine_target_role(skills: list, summary: str) -> str:
-    """Intelligently determine candidate target role from technical skills"""
+    """Infer a target role label from resume skills and summary text.
+
+    Args:
+        skills: Candidate skill strings.
+        summary: Professional summary used for keyword hints.
+
+    Returns:
+        str: Human-readable target role used in job search queries.
+    """
     skills_lower = [s.lower() for s in skills]
     skills_text = " ".join(skills_lower) + " " + summary.lower()
 
@@ -60,6 +83,17 @@ def _determine_target_role(skills: list, summary: str) -> str:
 
 @router.post("/discover/{user_id}", response_model=List[MatchedJobResponse])
 async def discover_jobs(user_id: str):
+    """Run live job discovery for a user and persist matched results.
+
+    Args:
+        user_id: MongoDB ObjectId string of the candidate.
+
+    Returns:
+        List[MatchedJobResponse]: Newly discovered and scored job matches.
+
+    Raises:
+        HTTPException: If the user id is invalid, no resume exists, or discovery fails.
+    """
     try:
         obj_id = PydanticObjectId(user_id)
     except Exception:
@@ -202,6 +236,17 @@ async def discover_jobs(user_id: str):
 
 @router.get("/matched/{user_id}", response_model=List[MatchedJobResponse])
 async def get_matched_jobs(user_id: str):
+    """Return previously persisted matched jobs for a user.
+
+    Args:
+        user_id: MongoDB ObjectId string of the candidate.
+
+    Returns:
+        List[MatchedJobResponse]: Stored matches sorted by score.
+
+    Raises:
+        HTTPException: If the user id is invalid.
+    """
     try:
         obj_id = PydanticObjectId(user_id)
     except Exception:

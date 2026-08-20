@@ -1,3 +1,9 @@
+"""Resume upload and retrieval API routes.
+
+Accepts PDF uploads, deduplicates by content hash, and persists structured
+profiles produced by ``ResumeParserAgent``.
+"""
+
 import sys
 import hashlib
 from pathlib import Path
@@ -21,6 +27,18 @@ resume_agent = ResumeParserAgent(groq_api_key=settings.GROQ_API_KEY)
 
 @router.post("/upload", response_model=ResumeResponse, status_code=status.HTTP_201_CREATED)
 async def upload_resume(user_id: str, file: UploadFile = File(...)):
+    """Upload a PDF resume, parse it with the AI agent, and store the result.
+
+    Args:
+        user_id: MongoDB ObjectId string of the owning user.
+        file: Uploaded PDF file.
+
+    Returns:
+        ResumeResponse: Parsed resume document (existing duplicate or newly inserted).
+
+    Raises:
+        HTTPException: On invalid file type, empty upload, bad user id, or parse failure.
+    """
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -120,6 +138,17 @@ async def upload_resume(user_id: str, file: UploadFile = File(...)):
 
 @router.get("/user/{user_id}", response_model=Optional[ResumeResponse])
 async def get_latest_resume(user_id: str):
+    """Fetch the most recently uploaded resume for a user.
+
+    Args:
+        user_id: MongoDB ObjectId string of the owning user.
+
+    Returns:
+        Optional[ResumeResponse]: Latest resume, or ``None`` if none exists.
+
+    Raises:
+        HTTPException: If ``user_id`` is malformed or the query fails.
+    """
     try:
         obj_id = PydanticObjectId(user_id)
         resume = await Resume.find_one(Resume.user_id == obj_id, sort=[("created_at", -1)])

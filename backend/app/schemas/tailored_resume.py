@@ -1,9 +1,13 @@
+"""Pydantic schemas for tailored resume generation and PDF export payloads."""
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field
 
 
 class TailorResumeRequest(BaseModel):
+    """Request body for ``POST /api/agents/tailor-resume``."""
+
     resume_id: str
     job_id: str
     job_description: Optional[str] = None

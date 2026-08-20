@@ -1,3 +1,9 @@
+"""Job discovery agent using JobSpy scraping and Groq fit scoring.
+
+Filters non-technical roles, scrapes live listings, and returns ranked matches
+aligned to a candidate resume profile.
+"""
+
 import os
 import re
 import json
@@ -44,11 +50,29 @@ NON_TECH_BLACKLIST = [
 
 
 class JobDiscoveryAgent:
+    """Discovers and scores live job listings against a candidate resume."""
+
     def __init__(self, groq_api_key: str = None, rapidapi_key: str = None, model_id: str = "openai/gpt-oss-120b"):
+        """Initialize scraping/scoring credentials.
+
+        Args:
+            groq_api_key: Optional Groq API key for LLM scoring.
+            rapidapi_key: Optional RapidAPI key (reserved for alternate sources).
+            model_id: Default Groq model id when ``GROQ_MODEL`` is unset.
+        """
         self.groq_api_key = groq_api_key or os.getenv("GROQ_API_KEY", "")
         self.model_id = os.getenv("GROQ_MODEL", model_id)
 
     async def discover_jobs(self, resume_data: dict, max_results: int = 5) -> List[dict]:
+        """Scrape and score jobs for a resume profile.
+
+        Args:
+            resume_data: Parsed resume fields (skills, role, city, summary).
+            max_results: Maximum number of ranked jobs to return.
+
+        Returns:
+            List[dict]: Ranked job match dictionaries with scores and reasoning.
+        """
         skills = resume_data.get("skills", [])
         role = resume_data.get("role_preference", "Software Engineer")
         city = resume_data.get("city", "Pakistan")

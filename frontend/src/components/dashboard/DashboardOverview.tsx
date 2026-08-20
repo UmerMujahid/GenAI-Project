@@ -140,7 +140,7 @@ export default function DashboardOverview({
               onClick={() => setActiveTab("resume")}
               className="px-4 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all"
             >
-              {resumeData ? "Update Resume ↗" : "Upload Resume ↗"}
+              {resumeData ? "Update Resume" : "Upload Resume"}
             </button>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function DashboardOverview({
               onClick={() => setActiveTab("resume")}
               className="px-5 py-2.5 rounded-xl text-xs font-bold bg-amber-500 text-black hover:bg-amber-400 transition-all"
             >
-              Upload Resume Now ↗
+              Upload Resume Now
             </button>
           </div>
         )}
@@ -196,7 +196,7 @@ export default function DashboardOverview({
             onClick={() => setActiveTab("jobs")}
             className="px-4 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5"
           >
-            Go to Job Finder ↗
+            Go to Job Finder
           </button>
         </div>
 
@@ -258,7 +258,7 @@ export default function DashboardOverview({
                           rel="noopener noreferrer"
                           className="px-3 py-1 rounded-lg text-xs font-bold bg-amber-500 text-black hover:bg-amber-400 transition-all inline-block"
                         >
-                          Apply ↗
+                          Apply
                         </a>
                       </div>
                     </td>

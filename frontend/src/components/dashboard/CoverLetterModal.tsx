@@ -1,15 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { CoverLetterResult } from "../../services/api";
 
+/**
+ * Props for the editable cover letter preview modal.
+ */
 interface CoverLetterModalProps {
   result: CoverLetterResult | null;
   loading: boolean;
   error: string;
   exporting: boolean;
   onClose: () => void;
+  /** Persist edits and trigger PDF export using body paragraphs derived from the draft. */
   onExport: (editedText: string, paragraphs: string[]) => void;
 }
 
+/**
+ * Modal for reviewing, editing, copying, and exporting an AI-generated cover letter.
+ *
+ * Syncs local draft text from ``result`` whenever a new letter arrives, then
+ * lets the user refine paragraphs before PDF download.
+ *
+ * @param props - Generation state, export busy flag, and close/export handlers.
+ */
 export default function CoverLetterModal({
   result,
   loading,
@@ -21,6 +33,7 @@ export default function CoverLetterModal({
   const [draft, setDraft] = useState("");
   const [copied, setCopied] = useState(false);
 
+  // Rebuild the editable draft whenever the API returns a new cover letter.
   useEffect(() => {
     if (result?.full_text) {
       setDraft(result.full_text);
@@ -43,6 +56,7 @@ export default function CoverLetterModal({
 
   if (!loading && !error && !result) return null;
 
+  /** Copy the current draft to the clipboard and briefly show confirmation. */
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(draft);
@@ -53,6 +67,9 @@ export default function CoverLetterModal({
     }
   };
 
+  /**
+   * Split the draft into body paragraphs for PDF export, dropping salutation/closing when possible.
+   */
   const paragraphsFromDraft = () => {
     const chunks = draft
       .split(/\n\s*\n/)
