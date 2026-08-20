@@ -138,6 +138,12 @@ export default function Dashboard() {
         education: tailorResult.education,
         experience: tailorResult.experience,
         certifications: tailorResult.certifications,
+        achievements: tailorResult.achievements,
+        languages: tailorResult.languages,
+        volunteer_work: tailorResult.volunteer_work,
+        section_order: tailorResult.section_order,
+        subtitle: tailorResult.subtitle,
+        raw_text: tailorResult.raw_text,
       });
     } catch (err: any) {
       setTailorError(err.response?.data?.detail || "PDF export failed.");

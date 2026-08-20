@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field
 
 
@@ -18,6 +18,11 @@ class TailoredProjectSchema(BaseModel):
 class SkillGroupSchema(BaseModel):
     category: str = "Technical Skills"
     skills: List[str] = Field(default_factory=list)
+
+
+class LanguageSchema(BaseModel):
+    language: str = ""
+    proficiency: str = ""
 
 
 class OriginalResumeSnapshot(BaseModel):
@@ -46,7 +51,13 @@ class TailorResumeResponse(BaseModel):
     contact_info: Dict[str, Any] = Field(default_factory=dict)
     education: List[Dict[str, Any]] = Field(default_factory=list)
     experience: List[Dict[str, Any]] = Field(default_factory=list)
-    certifications: List[str] = Field(default_factory=list)
+    certifications: List[Union[str, Dict[str, Any]]] = Field(default_factory=list)
+    achievements: List[Union[str, Dict[str, Any]]] = Field(default_factory=list)
+    languages: List[LanguageSchema] = Field(default_factory=list)
+    volunteer_work: List[Dict[str, Any]] = Field(default_factory=list)
+    section_order: List[str] = Field(default_factory=list)
+    subtitle: Optional[str] = ""
+    raw_text: Optional[str] = ""
     created_at: datetime
 
 
@@ -60,4 +71,12 @@ class ExportResumePdfRequest(BaseModel):
     projects: List[TailoredProjectSchema] = Field(default_factory=list)
     education: List[Dict[str, Any]] = Field(default_factory=list)
     experience: List[Dict[str, Any]] = Field(default_factory=list)
-    certifications: List[str] = Field(default_factory=list)
+    certifications: List[Union[str, Dict[str, Any]]] = Field(default_factory=list)
+    achievements: List[Union[str, Dict[str, Any]]] = Field(default_factory=list)
+    languages: List[Union[LanguageSchema, Dict[str, Any], str]] = Field(default_factory=list)
+    volunteer_work: List[Dict[str, Any]] = Field(default_factory=list)
+    section_order: List[str] = Field(default_factory=list)
+    subtitle: Optional[str] = ""
+    raw_text: Optional[str] = ""
+    summary: Optional[str] = ""
+    skills: List[str] = Field(default_factory=list)

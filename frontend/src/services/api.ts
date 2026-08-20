@@ -175,7 +175,13 @@ export interface TailorResumeResult {
   contact_info?: ResumeData["contact_info"];
   education?: ResumeData["education"];
   experience?: ResumeData["experience"];
-  certifications?: string[];
+  certifications?: string[] | Array<Record<string, string>>;
+  achievements?: string[] | Array<Record<string, string>>;
+  languages?: Array<{ language?: string; proficiency?: string }>;
+  volunteer_work?: Array<{ activity?: string }>;
+  section_order?: string[];
+  subtitle?: string;
+  raw_text?: string;
   created_at?: string;
 }
 
@@ -197,7 +203,13 @@ export const exportTailoredResumePdfApi = async (payload: {
   projects: TailoredProject[];
   education?: ResumeData["education"];
   experience?: ResumeData["experience"];
-  certifications?: string[];
+  certifications?: TailorResumeResult["certifications"];
+  achievements?: TailorResumeResult["achievements"];
+  languages?: TailorResumeResult["languages"];
+  volunteer_work?: TailorResumeResult["volunteer_work"];
+  section_order?: string[];
+  subtitle?: string;
+  raw_text?: string;
 }): Promise<void> => {
   const response = await api.post("/agents/export-resume-pdf", payload, {
     responseType: "blob",

@@ -11,7 +11,13 @@ from beanie import PydanticObjectId
 from fastapi.responses import StreamingResponse
 
 from app.core.config import settings
-from app.core.pdf_export import build_tailored_resume_pdf
+from app.core.pdf_export import (
+    build_tailored_resume_pdf,
+    detect_section_order,
+    extract_achievements_from_raw_text,
+    extract_languages_from_raw_text,
+    extract_subtitle_from_raw_text,
+)
 from app.models.resume import Resume
 from app.models.matched_job import MatchedJob
 from app.models.tailored_resume import TailoredResume
@@ -21,6 +27,7 @@ from app.schemas.tailored_resume import (
     TailoredResumeContent,
     TailoredProjectSchema,
     SkillGroupSchema,
+    LanguageSchema,
     OriginalResumeSnapshot,
     ExportResumePdfRequest,
 )
@@ -76,7 +83,21 @@ async def tailor_resume(payload: TailorResumeRequest):
             detail=f"Failed to tailor resume: {str(e)}",
         )
 
-    original_projects = [p if isinstance(p, dict) else {"title": str(p), "description": ""} for p in (resume.projects or [])]
+    original_projects = [
+        p if isinstance(p, dict) else {"title": str(p), "description": ""}
+        for p in (resume.projects or [])
+    ]
+    raw_text = resume.raw_text or ""
+    contact = resume.contact_info or {}
+    section_order = detect_section_order(raw_text=raw_text)
+    languages = extract_languages_from_raw_text(raw_text)
+    achievements = extract_achievements_from_raw_text(raw_text)
+    if not achievements and resume.volunteer_work:
+        achievements = [
+            (item.get("activity") if isinstance(item, dict) else str(item))
+            for item in resume.volunteer_work
+        ]
+    subtitle = extract_subtitle_from_raw_text(raw_text, name=str(contact.get("name") or ""))
 
     document = TailoredResume(
         user_id=resume.user_id,
@@ -93,10 +114,16 @@ async def tailor_resume(payload: TailorResumeRequest):
         tailored_projects=tailored.get("projects") or [],
         highlighted_keywords=tailored.get("highlighted_keywords") or [],
         tailoring_notes=tailored.get("tailoring_notes") or "",
-        contact_info=resume.contact_info or {},
+        contact_info=contact,
         education=resume.education or [],
         experience=resume.experience or [],
         certifications=resume.certifications or [],
+        achievements=achievements or [],
+        languages=languages or [],
+        volunteer_work=resume.volunteer_work or [],
+        section_order=section_order,
+        subtitle=subtitle,
+        raw_text=raw_text,
     )
     await document.insert()
 
@@ -106,7 +133,11 @@ async def tailor_resume(payload: TailorResumeRequest):
 @router.post("/export-resume-pdf")
 async def export_resume_pdf(payload: ExportResumePdfRequest):
     try:
-        pdf_bytes = build_tailored_resume_pdf(payload.model_dump())
+        data = payload.model_dump()
+        # Ensure section order is always populated for mirroring
+        if not data.get("section_order"):
+            data["section_order"] = detect_section_order(raw_text=data.get("raw_text") or "")
+        pdf_bytes = build_tailored_resume_pdf(data)
     except Exception as e:
         print(f"[AgentsAPI] PDF export failed: {e}")
         raise HTTPException(
@@ -141,6 +172,16 @@ def _to_response(document: TailoredResume) -> TailorResumeResponse:
             )
         )
 
+    languages = []
+    for lang in document.languages or []:
+        if isinstance(lang, dict):
+            languages.append(
+                LanguageSchema(
+                    language=lang.get("language") or lang.get("name") or "",
+                    proficiency=lang.get("proficiency") or lang.get("level") or "",
+                )
+            )
+
     return TailorResumeResponse(
         id=str(document.id),
         resume_id=str(document.resume_id),
@@ -164,5 +205,11 @@ def _to_response(document: TailoredResume) -> TailorResumeResponse:
         education=document.education or [],
         experience=document.experience or [],
         certifications=document.certifications or [],
+        achievements=document.achievements or [],
+        languages=languages,
+        volunteer_work=document.volunteer_work or [],
+        section_order=document.section_order or [],
+        subtitle=document.subtitle or "",
+        raw_text=document.raw_text or "",
         created_at=document.created_at,
     )
