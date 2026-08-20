@@ -1,3 +1,5 @@
+"""Internship listing API routes backed by Beanie ``Internship`` documents."""
+
 from typing import List, Optional
 from fastapi import APIRouter
 from app.models.internship import Internship
@@ -7,6 +9,14 @@ router = APIRouter(prefix="/internships", tags=["Internships"])
 
 @router.get("/", response_model=List[InternshipResponse])
 async def get_internships(platform: Optional[str] = None):
+    """List internships, optionally filtered by source platform.
+
+    Args:
+        platform: Source platform name, or ``all`` / omitted for every record.
+
+    Returns:
+        List[InternshipResponse]: Serialized internship documents.
+    """
     if platform and platform.lower() != "all":
         internships = await Internship.find(Internship.source_platform == platform).to_list()
     else:

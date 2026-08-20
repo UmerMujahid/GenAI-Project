@@ -1,6 +1,9 @@
 import React from "react";
 import { TailorResumeResult } from "../../services/api";
 
+/**
+ * Props for the tailored resume comparison / preview modal.
+ */
 interface TailorResumeModalProps {
   result: TailorResumeResult | null;
   loading: boolean;
@@ -10,6 +13,11 @@ interface TailorResumeModalProps {
   onExport: () => void;
 }
 
+/**
+ * Highlight job-aligned keywords inside tailored summary/project text.
+ * @param text - Source string to render.
+ * @param keywords - Tokens to wrap with ``<mark>`` elements.
+ */
 function highlightText(text: string, keywords: string[]) {
   if (!text) return text;
   const tokens = (keywords || []).filter(Boolean).sort((a, b) => b.length - a.length);
@@ -34,6 +42,11 @@ function highlightText(text: string, keywords: string[]) {
   });
 }
 
+/**
+ * Modal showing original vs tailored resume sections with PDF export.
+ *
+ * @param props - Tailoring result/loading/error state and close/export handlers.
+ */
 export default function TailorResumeModal({
   result,
   loading,
@@ -86,7 +99,7 @@ export default function TailorResumeModal({
                     Preparing PDF...
                   </>
                 ) : (
-                  <>📥 Download Tailored PDF</>
+                  <>Download Tailored PDF</>
                 )}
               </button>
             )}
@@ -222,7 +235,7 @@ export default function TailorResumeModal({
                   disabled={exporting}
                   className="px-5 py-2.5 rounded-xl font-display font-black text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 text-black shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50"
                 >
-                  📥 Download Tailored PDF
+                  Download Tailored PDF
                 </button>
               </div>
             </>

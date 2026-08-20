@@ -1,9 +1,13 @@
+"""Pydantic schemas for cover letter generation and PDF export payloads."""
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
 class CoverLetterHeader(BaseModel):
+    """Contact header fields rendered at the top of a cover letter."""
+
     candidate_name: str = ""
     email: str = ""
     phone: str = ""
@@ -13,6 +17,8 @@ class CoverLetterHeader(BaseModel):
 
 
 class GenerateCoverLetterRequest(BaseModel):
+    """Request body for ``POST /api/agents/generate-cover-letter``."""
+
     resume_id: str
     job_id: str
     company_name: Optional[str] = ""

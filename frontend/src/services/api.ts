@@ -1,3 +1,9 @@
+/**
+ * Axios API client for the AI Internship Navigator backend.
+ *
+ * Attaches JWT bearer tokens from ``localStorage`` and exposes typed helpers
+ * for auth, resume upload, job discovery, resume tailoring, and cover letters.
+ */
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8000/api";
@@ -6,6 +12,7 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
+// Attach Authorization header on every request when a session token exists.
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("navigator_token");
@@ -59,11 +66,13 @@ export interface ResumeData {
   created_at?: string;
 }
 
+/** Authenticate with email/password and return a JWT session payload. */
 export const loginApi = async (email: string, password: string): Promise<AuthResponse> => {
   const response = await api.post<AuthResponse>("/auth/login", { email, password });
   return response.data;
 };
 
+/** Register a new account and receive a JWT session payload. */
 export const signupApi = async (data: {
   email: string;
   password: string;
@@ -75,6 +84,7 @@ export const signupApi = async (data: {
   return response.data;
 };
 
+/** Upload a PDF resume for AI parsing and profile persistence. */
 export const uploadResumeApi = async (userId: string, file: File): Promise<ResumeData> => {
   const formData = new FormData();
   formData.append("file", file);
@@ -86,6 +96,7 @@ export const uploadResumeApi = async (userId: string, file: File): Promise<Resum
   return response.data;
 };
 
+/** Fetch the most recently stored resume for a user, if any. */
 export const getLatestResumeApi = async (userId: string): Promise<ResumeData | null> => {
   const response = await api.get<ResumeData | null>(`/resume/user/${userId}`);
   return response.data;
@@ -125,11 +136,13 @@ export interface MatchedJobData {
   discovered_at?: string;
 }
 
+/** Run live JobSpy discovery + LLM scoring for the given user. */
 export const discoverJobsApi = async (userId: string): Promise<MatchedJobData[]> => {
   const response = await api.post<MatchedJobData[]>(`/jobs/discover/${userId}`);
   return response.data;
 };
 
+/** Load previously persisted matched jobs for the Job Finder tab. */
 export const getMatchedJobsApi = async (userId: string): Promise<MatchedJobData[]> => {
   const response = await api.get<MatchedJobData[]>(`/jobs/matched/${userId}`);
   return response.data;
@@ -185,6 +198,7 @@ export interface TailorResumeResult {
   created_at?: string;
 }
 
+/** Tailor a stored resume to a specific matched job via Agent 3. */
 export const tailorResumeApi = async (resumeId: string, jobId: string): Promise<TailorResumeResult> => {
   const response = await api.post<TailorResumeResult>("/agents/tailor-resume", {
     resume_id: resumeId,
@@ -193,6 +207,10 @@ export const tailorResumeApi = async (resumeId: string, jobId: string): Promise<
   return response.data;
 };
 
+/**
+ * Request a tailored resume PDF and trigger a browser file download.
+ * Workflow: POST blob → object URL → temporary anchor click → revoke URL.
+ */
 export const exportTailoredResumePdfApi = async (payload: {
   job_title?: string;
   organization?: string;
@@ -250,6 +268,7 @@ export interface CoverLetterResult {
   created_at?: string;
 }
 
+/** Generate a structured cover letter for a resume/job pair. */
 export const generateCoverLetterApi = async (payload: {
   resume_id: string;
   job_id: string;
@@ -265,6 +284,10 @@ export const generateCoverLetterApi = async (payload: {
   return response.data;
 };
 
+/**
+ * Request a cover letter PDF and trigger a browser file download.
+ * Workflow: POST blob → object URL → temporary anchor click → revoke URL.
+ */
 export const exportCoverLetterPdfApi = async (payload: {
   company_name?: string;
   job_title?: string;

@@ -1,3 +1,5 @@
+"""Beanie document model for persisted tailored resume variants."""
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from beanie import Document, PydanticObjectId
@@ -5,6 +7,8 @@ from pydantic import Field
 
 
 class TailoredResume(Document):
+    """MongoDB document storing an original vs AI-tailored resume snapshot."""
+
     user_id: PydanticObjectId
     resume_id: PydanticObjectId
     job_id: PydanticObjectId

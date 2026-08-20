@@ -1,3 +1,9 @@
+"""Resume parsing agent powered by LangChain + Groq.
+
+Extracts structured contact, skills, education, experience, and project fields
+from PDF bytes, with a structural regex fallback when the LLM is unavailable.
+"""
+
 import os
 import json
 import re
@@ -8,11 +14,27 @@ from ai.prompts.resume_parser_prompt import resume_chat_prompt
 
 
 class ResumeParserAgent:
+    """Orchestrates PDF text extraction and LLM/heuristic resume structuring."""
+
     def __init__(self, groq_api_key: str = None, model_id: str = "openai/gpt-oss-120b"):
+        """Initialize Groq credentials and model identifier.
+
+        Args:
+            groq_api_key: Optional Groq API key; falls back to ``GROQ_API_KEY``.
+            model_id: Default Groq model id when ``GROQ_MODEL`` is unset.
+        """
         self.groq_api_key = groq_api_key or os.getenv("GROQ_API_KEY", "")
         self.model_id = os.getenv("GROQ_MODEL", model_id)
 
     def parse_resume(self, pdf_bytes: bytes) -> dict:
+        """Parse a PDF resume into a normalized structured dictionary.
+
+        Args:
+            pdf_bytes: Raw PDF file contents.
+
+        Returns:
+            dict: Structured resume fields including ``raw_text`` and ``parser_mode``.
+        """
         raw_text = extract_text_from_pdf(pdf_bytes)
         if not raw_text:
             return self._empty_response()
@@ -36,12 +58,20 @@ class ResumeParserAgent:
         return self._normalize_schema(parsed_data)
 
     def _run_langchain_chain(self, raw_text: str) -> dict:
+        """Invoke the Groq LangChain prompt chain and return parsed JSON.
+
+        Args:
+            raw_text: Extracted resume plain text (truncated before invoke).
+
+        Returns:
+            dict | None: Structured fields on success, otherwise ``None``.
+        """
         if not self.groq_api_key:
             print("[ResumeParserAgent] No Groq API key found, skipping LLM.")
             return None
 
         try:
-            
+            # Low temperature keeps extraction deterministic for structured fields.
             llm = ChatGroq(
                 model=self.model_id,
                 api_key=self.groq_api_key,
@@ -49,7 +79,7 @@ class ResumeParserAgent:
                 max_tokens=2000
             )
 
-           
+            # Prompt → LLM → JsonOutputParser pipeline.
             chain = resume_chat_prompt | llm | JsonOutputParser()
             result = chain.invoke({"resume_text": raw_text[:4000]})
 

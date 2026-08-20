@@ -21,6 +21,14 @@ import ResumeParserTab from "../components/dashboard/ResumeParserTab";
 import TailorResumeModal from "../components/dashboard/TailorResumeModal";
 import CoverLetterModal from "../components/dashboard/CoverLetterModal";
 
+/**
+ * Authenticated dashboard shell.
+ *
+ * Owns resume upload, job discovery, resume tailoring, and cover letter
+ * workflows, then delegates presentation to tab and modal child components.
+ *
+ * @returns {JSX.Element} Dashboard layout with header, tabs, and agent modals.
+ */
 export default function Dashboard() {
   const { user, logout } = useAuth();
 
@@ -54,7 +62,7 @@ export default function Dashboard() {
   const [showCoverLetterModal, setShowCoverLetterModal] = useState(false);
   const [exportingCoverLetterPdf, setExportingCoverLetterPdf] = useState(false);
 
-  // Initial Data Fetching
+  // Load latest resume + cached matched jobs when the session user is available.
   useEffect(() => {
     if (user?.id) {
       loadResume(user.id);
@@ -62,6 +70,7 @@ export default function Dashboard() {
     }
   }, [user]);
 
+  /** Fetch the user's most recent parsed resume from the backend. */
   const loadResume = async (userId: string) => {
     try {
       const res = await getLatestResumeApi(userId);
@@ -73,6 +82,7 @@ export default function Dashboard() {
     }
   };
 
+  /** Load previously discovered matched jobs for the dashboard Job Finder tab. */
   const loadMatchedJobs = async (userId: string) => {
     try {
       const res = await getMatchedJobsApi(userId);
@@ -84,6 +94,7 @@ export default function Dashboard() {
     }
   };
 
+  /** Trigger Agent 2 live job discovery against the uploaded resume. */
   const handleDiscoverJobs = async () => {
     if (!user?.id) return;
     if (!resumeData) {
@@ -110,6 +121,10 @@ export default function Dashboard() {
     }
   };
 
+  /**
+   * Open the tailor modal and call Agent 3 to rewrite the resume for ``job``.
+   * @param {MatchedJobData} job - Target matched job from the Job Finder list.
+   */
   const handleTailorResume = async (job: MatchedJobData) => {
     if (!resumeData?.id) {
       setDiscoveryError("Upload a resume first so Agent 3 can tailor it to this job.");
@@ -132,6 +147,7 @@ export default function Dashboard() {
     }
   };
 
+  /** Download the tailored resume PDF via the export endpoint (blob download). */
   const handleExportTailoredPdf = async () => {
     if (!tailorResult) return;
     setExportingPdf(true);
@@ -161,6 +177,10 @@ export default function Dashboard() {
     }
   };
 
+  /**
+   * Open the cover letter modal and draft a letter for ``job``.
+   * @param {MatchedJobData} job - Target matched job from the Job Finder list.
+   */
   const handleGenerateCoverLetter = async (job: MatchedJobData) => {
     if (!resumeData?.id) {
       setDiscoveryError("Upload a resume first so Agent 3 can draft a cover letter for this job.");
@@ -188,6 +208,11 @@ export default function Dashboard() {
     }
   };
 
+  /**
+   * Export the (possibly edited) cover letter as a PDF download.
+   * @param {_editedText} Full letter text from the modal editor.
+   * @param {paragraphs} Body paragraphs derived from the draft for PDF layout.
+   */
   const handleExportCoverLetterPdf = async (_editedText: string, paragraphs: string[]) => {
     if (!coverLetterResult) return;
     setExportingCoverLetterPdf(true);
@@ -209,6 +234,10 @@ export default function Dashboard() {
     }
   };
 
+  /**
+   * Upload and parse a PDF resume, showing staged progress while the API runs.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - File input change event.
+   */
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user?.id) return;

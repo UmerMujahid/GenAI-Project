@@ -1,3 +1,9 @@
+"""ReportLab PDF export helpers for tailored resumes and cover letters.
+
+Normalizes Unicode punctuation for Helvetica/WinAnsi safety, mirrors original
+resume section order when detectable, and builds in-memory PDF byte streams.
+"""
+
 import re
 import unicodedata
 from io import BytesIO
@@ -97,7 +103,15 @@ DEFAULT_SECTION_ORDER = [
 
 
 def detect_section_order(raw_text: str = "", explicit_order: Optional[List[str]] = None) -> List[str]:
-    """Preserve original resume section sequence when detectable from raw text."""
+    """Detect resume section sequence from explicit order or raw heading lines.
+
+    Args:
+        raw_text: Original resume text used to locate standalone section headings.
+        explicit_order: Optional caller-provided section keys to honor first.
+
+    Returns:
+        list[str]: Ordered section keys (e.g. ``objective``, ``education``, ``skills``).
+    """
     if explicit_order:
         cleaned = []
         seen = set()
@@ -153,6 +167,15 @@ def detect_section_order(raw_text: str = "", explicit_order: Optional[List[str]]
 
 
 def build_tailored_resume_pdf(payload: Dict[str, Any]) -> bytes:
+    """Build a single-column tailored resume PDF from structured payload data.
+
+    Args:
+        payload: Dict containing contact info, summary, skills, projects, education,
+            optional ``section_order``, and related resume fields.
+
+    Returns:
+        bytes: Complete PDF document contents.
+    """
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -679,7 +702,15 @@ def extract_subtitle_from_raw_text(raw_text: str, name: str = "") -> str:
 
 
 def build_cover_letter_pdf(payload: Dict[str, Any]) -> bytes:
-    """Single-page cover letter PDF with clean resume-matching contact header."""
+    """Build a single-page cover letter PDF with a resume-style contact header.
+
+    Args:
+        payload: Cover letter fields including ``header``, ``salutation``,
+            ``body_paragraphs``, ``closing``, and optional company/job metadata.
+
+    Returns:
+        bytes: Complete PDF document contents.
+    """
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,

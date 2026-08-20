@@ -1,3 +1,9 @@
+"""Cover letter drafting agent powered by LangChain + Groq.
+
+Produces a structured 3-paragraph cover letter JSON payload with factual
+guardrails and a deterministic heuristic fallback when the LLM is unavailable.
+"""
+
 import json
 import os
 import re
@@ -11,6 +17,8 @@ from ai.prompts.cover_letter_prompt import cover_letter_prompt
 
 
 class CoverLetterHeaderOut(BaseModel):
+    """Contact header fields embedded in the cover letter document."""
+
     candidate_name: str = ""
     email: str = ""
     phone: str = ""
@@ -20,6 +28,8 @@ class CoverLetterHeaderOut(BaseModel):
 
 
 class CoverLetterLLMOut(BaseModel):
+    """Validated LLM/heuristic output schema for cover letter generation."""
+
     header: CoverLetterHeaderOut = Field(default_factory=CoverLetterHeaderOut)
     salutation: str = "Dear Hiring Manager,"
     body_paragraphs: List[str] = Field(default_factory=list)
@@ -28,7 +38,15 @@ class CoverLetterLLMOut(BaseModel):
 
 
 class CoverLetterAgent:
+    """Service that drafts targeted cover letters from candidate and job context."""
+
     def __init__(self, groq_api_key: str = None, model_id: str = "openai/gpt-oss-120b"):
+        """Initialize the agent with Groq credentials and model id.
+
+        Args:
+            groq_api_key: Optional Groq API key; falls back to ``GROQ_API_KEY`` env.
+            model_id: Default Groq model identifier.
+        """
         self.groq_api_key = groq_api_key or os.getenv("GROQ_API_KEY", "")
         self.model_id = os.getenv("GROQ_MODEL", model_id)
 
@@ -38,6 +56,16 @@ class CoverLetterAgent:
         job: Dict[str, Any],
         company_name: str = "",
     ) -> Dict[str, Any]:
+        """Generate a structured cover letter for the given candidate and job.
+
+        Args:
+            candidate: Resume-derived profile (contact, summary, skills, projects).
+            job: Target job metadata and description fields.
+            company_name: Optional company override (defaults to job organization).
+
+        Returns:
+            dict: Validated cover letter fields ready for API persistence/export.
+        """
         company = company_name or job.get("organization") or "the company"
         llm_payload = None
         if self.groq_api_key:

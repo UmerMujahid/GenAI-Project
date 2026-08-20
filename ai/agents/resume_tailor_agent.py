@@ -1,3 +1,9 @@
+"""Resume tailoring agent powered by LangChain + Groq.
+
+Rewrites summary, skills ordering, and project bullets for a target job while
+enforcing factual guardrails (no invented employers, projects, or skills).
+"""
+
 import json
 import os
 import re
@@ -11,16 +17,22 @@ from ai.prompts.resume_tailor_prompt import resume_tailor_prompt
 
 
 class TailoredProjectOut(BaseModel):
+    """Tailored project entry with action-oriented bullet points."""
+
     title: str = ""
     bullets: List[str] = Field(default_factory=list)
 
 
 class SkillGroupOut(BaseModel):
+    """Grouped skill category used in tailored resume output."""
+
     category: str = "Technical Skills"
     skills: List[str] = Field(default_factory=list)
 
 
 class TailoredResumeLLMOut(BaseModel):
+    """Validated schema for LLM/heuristic tailored resume payloads."""
+
     professional_summary: str = ""
     prioritized_skills: List[str] = Field(default_factory=list)
     skill_groups: List[SkillGroupOut] = Field(default_factory=list)
@@ -30,11 +42,28 @@ class TailoredResumeLLMOut(BaseModel):
 
 
 class ResumeTailorAgent:
+    """Service that rewrites an existing resume for one target job posting."""
+
     def __init__(self, groq_api_key: str = None, model_id: str = "openai/gpt-oss-120b"):
+        """Initialize the tailor agent.
+
+        Args:
+            groq_api_key: Optional Groq API key; falls back to ``GROQ_API_KEY`` env.
+            model_id: Default Groq model identifier.
+        """
         self.groq_api_key = groq_api_key or os.getenv("GROQ_API_KEY", "")
         self.model_id = os.getenv("GROQ_MODEL", model_id)
 
     def tailor_resume(self, resume_data: Dict[str, Any], job_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Produce a fact-preserving tailored resume dictionary for ``job_data``.
+
+        Args:
+            resume_data: Parsed original resume fields (summary, skills, projects, etc.).
+            job_data: Target job title, organization, and requirements text.
+
+        Returns:
+            dict: Validated tailored resume content for API storage/export.
+        """
         original_skills = [str(s).strip() for s in (resume_data.get("skills") or []) if str(s).strip()]
         original_projects = resume_data.get("projects") or []
         allowed_skill_set = self._allowed_skills(resume_data, original_skills)

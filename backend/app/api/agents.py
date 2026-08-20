@@ -1,3 +1,9 @@
+"""Agent API routers for resume tailoring and cover letter generation.
+
+Exposes FastAPI endpoints that orchestrate LangChain/Groq agents, persist
+results in MongoDB via Beanie, and stream ReportLab PDF exports to clients.
+"""
+
 import sys
 from pathlib import Path
 
@@ -50,6 +56,17 @@ cover_letter_agent = CoverLetterAgent(groq_api_key=settings.GROQ_API_KEY)
 
 @router.post("/tailor-resume", response_model=TailorResumeResponse)
 async def tailor_resume(payload: TailorResumeRequest):
+    """Rewrite a stored resume for a specific matched job using Groq.
+
+    Args:
+        payload: Request containing ``resume_id`` and ``job_id``.
+
+    Returns:
+        TailorResumeResponse: Original vs tailored resume snapshot persisted in MongoDB.
+
+    Raises:
+        HTTPException: If IDs are invalid, documents are missing, or generation fails.
+    """
     try:
         resume_oid = PydanticObjectId(payload.resume_id)
         job_oid = PydanticObjectId(payload.job_id)
@@ -86,6 +103,7 @@ async def tailor_resume(payload: TailorResumeRequest):
     }
 
     try:
+        # Invoke LangChain + Groq tailor agent (falls back to heuristic if LLM fails)
         tailored = tailor_agent.tailor_resume(resume_payload, job_payload)
     except Exception as e:
         print(f"[AgentsAPI] Tailor resume failed: {e}")
@@ -100,6 +118,7 @@ async def tailor_resume(payload: TailorResumeRequest):
     ]
     raw_text = resume.raw_text or ""
     contact = resume.contact_info or {}
+    # Preserve original resume section sequence for PDF mirroring
     section_order = detect_section_order(raw_text=raw_text)
     languages = extract_languages_from_raw_text(raw_text)
     achievements = extract_achievements_from_raw_text(raw_text)
@@ -143,6 +162,14 @@ async def tailor_resume(payload: TailorResumeRequest):
 
 @router.post("/export-resume-pdf")
 async def export_resume_pdf(payload: ExportResumePdfRequest):
+    """Generate a tailored resume PDF and return it as a file download.
+
+    Args:
+        payload: Structured tailored resume content for ReportLab rendering.
+
+    Returns:
+        StreamingResponse: ``application/pdf`` attachment named ``Tailored_Resume.pdf``.
+    """
     try:
         data = payload.model_dump()
         # Ensure section order is always populated for mirroring
@@ -165,6 +192,17 @@ async def export_resume_pdf(payload: ExportResumePdfRequest):
 
 @router.post("/generate-cover-letter", response_model=GenerateCoverLetterResponse)
 async def generate_cover_letter(payload: GenerateCoverLetterRequest):
+    """Draft a 3-paragraph cover letter for a resume/job pair.
+
+    When ``use_tailored`` is true, prefers the latest tailored resume variant
+    for the same resume/job (or resume) before falling back to the original.
+
+    Args:
+        payload: ``resume_id``, ``job_id``, optional ``company_name``, ``use_tailored``.
+
+    Returns:
+        GenerateCoverLetterResponse: Persisted cover letter JSON including ``full_text``.
+    """
     try:
         resume_oid = PydanticObjectId(payload.resume_id)
         job_oid = PydanticObjectId(payload.job_id)
@@ -187,13 +225,13 @@ async def generate_cover_letter(payload: GenerateCoverLetterRequest):
     use_tailored = bool(payload.use_tailored)
 
     if use_tailored:
+        # Prefer job-specific tailored resume; otherwise latest tailored for this resume
         tailored_doc = await TailoredResume.find_one(
             TailoredResume.resume_id == resume.id,
             TailoredResume.job_id == job.id,
             sort=[("created_at", -1)],
         )
         if not tailored_doc:
-            # Fall back to latest tailored resume for this user/resume
             tailored_doc = await TailoredResume.find_one(
                 TailoredResume.resume_id == resume.id,
                 sort=[("created_at", -1)],
@@ -259,6 +297,14 @@ async def generate_cover_letter(payload: GenerateCoverLetterRequest):
 
 @router.post("/export-cover-letter-pdf")
 async def export_cover_letter_pdf(payload: ExportCoverLetterPdfRequest):
+    """Render a cover letter PDF with a clean contact header.
+
+    Args:
+        payload: Cover letter header, salutation, body paragraphs, and closing.
+
+    Returns:
+        StreamingResponse: PDF attachment named ``Cover_Letter_[Company].pdf``.
+    """
     try:
         pdf_bytes = build_cover_letter_pdf(payload.model_dump())
     except Exception as e:
@@ -277,6 +323,7 @@ async def export_cover_letter_pdf(payload: ExportCoverLetterPdfRequest):
 
 
 def _cover_letter_response(document: CoverLetter) -> GenerateCoverLetterResponse:
+    """Map a CoverLetter Beanie document to the API response schema."""
     header = document.header or {}
     paragraphs = document.body_paragraphs or []
     full_text = "\n\n".join(
