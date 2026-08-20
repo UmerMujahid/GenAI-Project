@@ -676,3 +676,125 @@ def extract_subtitle_from_raw_text(raw_text: str, name: str = "") -> str:
     if len(candidate) > 80:
         return ""
     return _plain(candidate)
+
+
+def build_cover_letter_pdf(payload: Dict[str, Any]) -> bytes:
+    """Single-page cover letter PDF with clean resume-matching contact header."""
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        leftMargin=0.75 * inch,
+        rightMargin=0.75 * inch,
+        topMargin=0.6 * inch,
+        bottomMargin=0.6 * inch,
+        title="Cover Letter",
+    )
+
+    base = getSampleStyleSheet()
+    name_style = ParagraphStyle(
+        "CLName",
+        parent=base["Heading1"],
+        fontName="Helvetica-Bold",
+        fontSize=18,
+        textColor=INK,
+        alignment=TA_CENTER,
+        spaceAfter=3,
+        leading=22,
+    )
+    contact_style = ParagraphStyle(
+        "CLContact",
+        parent=base["Normal"],
+        fontName="Helvetica",
+        fontSize=9.5,
+        textColor=GRAY,
+        alignment=TA_CENTER,
+        spaceAfter=14,
+        leading=13,
+    )
+    meta_style = ParagraphStyle(
+        "CLMeta",
+        parent=base["Normal"],
+        fontName="Helvetica",
+        fontSize=10,
+        textColor=INK,
+        alignment=TA_LEFT,
+        spaceAfter=2,
+        leading=13,
+    )
+    body_style = ParagraphStyle(
+        "CLBody",
+        parent=base["Normal"],
+        fontName="Helvetica",
+        fontSize=11,
+        textColor=INK,
+        alignment=TA_LEFT,
+        spaceAfter=10,
+        leading=15,
+    )
+    closing_style = ParagraphStyle(
+        "CLClosing",
+        parent=base["Normal"],
+        fontName="Helvetica",
+        fontSize=11,
+        textColor=INK,
+        alignment=TA_LEFT,
+        spaceBefore=4,
+        spaceAfter=2,
+        leading=15,
+    )
+
+    header = payload.get("header") or {}
+    name = _plain(
+        header.get("candidate_name")
+        or payload.get("candidate_name")
+        or "Candidate"
+    )
+    contact_bits = [
+        _plain(header.get("email")),
+        _plain(header.get("phone")),
+        _plain(header.get("location")),
+        _plain(header.get("github")),
+        _plain(header.get("linkedin")),
+    ]
+    contact_line = "  |  ".join([bit for bit in contact_bits if bit])
+
+    story: List[Any] = []
+    story.append(Paragraph(_xml_escape(name), name_style))
+    if contact_line:
+        story.append(Paragraph(_xml_escape(contact_line), contact_style))
+
+    company = _plain(payload.get("company_name") or "")
+    job_title = _plain(payload.get("job_title") or "")
+    if company or job_title:
+        story.append(Paragraph(_xml_escape(company or "Hiring Team"), meta_style))
+        if job_title:
+            story.append(Paragraph(_xml_escape(f"Re: {job_title}"), meta_style))
+        story.append(Spacer(1, 10))
+
+    salutation = _plain(payload.get("salutation") or "Dear Hiring Manager,")
+    story.append(Paragraph(_xml_escape(salutation), body_style))
+
+    paragraphs = payload.get("body_paragraphs") or []
+    if not paragraphs and payload.get("full_text"):
+        paragraphs = [p.strip() for p in str(payload.get("full_text")).split("\n\n") if p.strip()]
+    for paragraph in paragraphs:
+        cleaned = _plain(paragraph)
+        if cleaned:
+            story.append(Paragraph(_xml_escape(cleaned), body_style))
+
+    closing = _plain(payload.get("closing") or "Sincerely,")
+    story.append(Paragraph(_xml_escape(closing), closing_style))
+    story.append(Spacer(1, 16))
+    story.append(Paragraph(_xml_escape(name), closing_style))
+
+    doc.build(story)
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+    return pdf_bytes
+
+
+def safe_filename_fragment(value: str, fallback: str = "Company") -> str:
+    text = _plain(value) or fallback
+    text = re.sub(r"[^A-Za-z0-9._-]+", "_", text).strip("._")
+    return (text or fallback)[:40]

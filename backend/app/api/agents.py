@@ -13,14 +13,17 @@ from fastapi.responses import StreamingResponse
 from app.core.config import settings
 from app.core.pdf_export import (
     build_tailored_resume_pdf,
+    build_cover_letter_pdf,
     detect_section_order,
     extract_achievements_from_raw_text,
     extract_languages_from_raw_text,
     extract_subtitle_from_raw_text,
+    safe_filename_fragment,
 )
 from app.models.resume import Resume
 from app.models.matched_job import MatchedJob
 from app.models.tailored_resume import TailoredResume
+from app.models.cover_letter import CoverLetter
 from app.schemas.tailored_resume import (
     TailorResumeRequest,
     TailorResumeResponse,
@@ -31,10 +34,18 @@ from app.schemas.tailored_resume import (
     OriginalResumeSnapshot,
     ExportResumePdfRequest,
 )
+from app.schemas.cover_letter import (
+    GenerateCoverLetterRequest,
+    GenerateCoverLetterResponse,
+    ExportCoverLetterPdfRequest,
+    CoverLetterHeader,
+)
 from ai.agents.resume_tailor_agent import ResumeTailorAgent
+from ai.agents.cover_letter_agent import CoverLetterAgent
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
 tailor_agent = ResumeTailorAgent(groq_api_key=settings.GROQ_API_KEY)
+cover_letter_agent = CoverLetterAgent(groq_api_key=settings.GROQ_API_KEY)
 
 
 @router.post("/tailor-resume", response_model=TailorResumeResponse)
@@ -150,6 +161,155 @@ async def export_resume_pdf(payload: ExportResumePdfRequest):
         "Content-Disposition": 'attachment; filename="Tailored_Resume.pdf"',
     }
     return StreamingResponse(buffer, media_type="application/pdf", headers=headers)
+
+
+@router.post("/generate-cover-letter", response_model=GenerateCoverLetterResponse)
+async def generate_cover_letter(payload: GenerateCoverLetterRequest):
+    try:
+        resume_oid = PydanticObjectId(payload.resume_id)
+        job_oid = PydanticObjectId(payload.job_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid resume_id or job_id format.")
+
+    resume = await Resume.get(resume_oid)
+    if not resume:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resume not found.")
+
+    job = await MatchedJob.get(job_oid)
+    if not job:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Matched job not found.")
+
+    if str(resume.user_id) != str(job.user_id):
+        raise HTTPException(status_code=400, detail="Resume and job do not belong to the same user.")
+
+    company_name = (payload.company_name or job.organization or "").strip()
+    tailored_doc = None
+    use_tailored = bool(payload.use_tailored)
+
+    if use_tailored:
+        tailored_doc = await TailoredResume.find_one(
+            TailoredResume.resume_id == resume.id,
+            TailoredResume.job_id == job.id,
+            sort=[("created_at", -1)],
+        )
+        if not tailored_doc:
+            # Fall back to latest tailored resume for this user/resume
+            tailored_doc = await TailoredResume.find_one(
+                TailoredResume.resume_id == resume.id,
+                sort=[("created_at", -1)],
+            )
+
+    if tailored_doc:
+        candidate = {
+            "contact_info": tailored_doc.contact_info or resume.contact_info or {},
+            "summary": tailored_doc.tailored_summary or resume.summary or "",
+            "skills": tailored_doc.tailored_skills or resume.skills or [],
+            "projects": tailored_doc.tailored_projects or resume.projects or [],
+            "experience": tailored_doc.experience or resume.experience or [],
+        }
+        use_tailored = True
+    else:
+        candidate = {
+            "contact_info": resume.contact_info or {},
+            "summary": resume.summary or "",
+            "skills": resume.skills or [],
+            "projects": resume.projects or [],
+            "experience": resume.experience or [],
+        }
+        use_tailored = False
+
+    job_payload = {
+        "title": job.title,
+        "organization": company_name or job.organization,
+        "key_skills": job.key_skills or [],
+        "requirements_summary": job.requirements_summary or "",
+        "core_responsibilities": job.core_responsibilities or "",
+    }
+
+    try:
+        generated = cover_letter_agent.generate_cover_letter(
+            candidate=candidate,
+            job=job_payload,
+            company_name=company_name or job.organization,
+        )
+    except Exception as e:
+        print(f"[AgentsAPI] Cover letter generation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate cover letter: {str(e)}",
+        )
+
+    document = CoverLetter(
+        user_id=resume.user_id,
+        resume_id=resume.id,
+        job_id=job.id,
+        tailored_resume_id=tailored_doc.id if tailored_doc else None,
+        job_title=job.title,
+        company_name=company_name or job.organization,
+        use_tailored=use_tailored,
+        header=generated.get("header") or {},
+        salutation=generated.get("salutation") or "Dear Hiring Manager,",
+        body_paragraphs=generated.get("body_paragraphs") or [],
+        closing=generated.get("closing") or "Sincerely,",
+        candidate_name=generated.get("candidate_name") or "",
+    )
+    await document.insert()
+    return _cover_letter_response(document)
+
+
+@router.post("/export-cover-letter-pdf")
+async def export_cover_letter_pdf(payload: ExportCoverLetterPdfRequest):
+    try:
+        pdf_bytes = build_cover_letter_pdf(payload.model_dump())
+    except Exception as e:
+        print(f"[AgentsAPI] Cover letter PDF export failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate cover letter PDF: {str(e)}",
+        )
+
+    company_slug = safe_filename_fragment(payload.company_name or "Company")
+    buffer = BytesIO(pdf_bytes)
+    headers = {
+        "Content-Disposition": f'attachment; filename="Cover_Letter_{company_slug}.pdf"',
+    }
+    return StreamingResponse(buffer, media_type="application/pdf", headers=headers)
+
+
+def _cover_letter_response(document: CoverLetter) -> GenerateCoverLetterResponse:
+    header = document.header or {}
+    paragraphs = document.body_paragraphs or []
+    full_text = "\n\n".join(
+        [
+            document.salutation or "",
+            *paragraphs,
+            document.closing or "",
+            document.candidate_name or header.get("candidate_name") or "",
+        ]
+    ).strip()
+
+    return GenerateCoverLetterResponse(
+        id=str(document.id),
+        resume_id=str(document.resume_id),
+        job_id=str(document.job_id),
+        job_title=document.job_title,
+        company_name=document.company_name,
+        use_tailored=bool(document.use_tailored),
+        header=CoverLetterHeader(
+            candidate_name=header.get("candidate_name") or document.candidate_name or "",
+            email=header.get("email") or "",
+            phone=header.get("phone") or "",
+            location=header.get("location") or "",
+            github=header.get("github") or "",
+            linkedin=header.get("linkedin") or "",
+        ),
+        salutation=document.salutation or "Dear Hiring Manager,",
+        body_paragraphs=paragraphs,
+        closing=document.closing or "Sincerely,",
+        candidate_name=document.candidate_name or header.get("candidate_name") or "",
+        full_text=full_text,
+        created_at=document.created_at,
+    )
 
 
 def _to_response(document: TailoredResume) -> TailorResumeResponse:
