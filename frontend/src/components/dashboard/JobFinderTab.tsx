@@ -15,6 +15,8 @@ interface JobFinderTabProps {
   handleDiscoverJobs: () => void;
   tailoringJobId: string | null;
   onTailorResume: (job: MatchedJobData) => void;
+  coverLetterJobId: string | null;
+  onGenerateCoverLetter: (job: MatchedJobData) => void;
 }
 
 const getSafeApplyUrl = (url?: string, title?: string, company?: string): string => {
@@ -38,6 +40,8 @@ export default function JobFinderTab({
   handleDiscoverJobs,
   tailoringJobId,
   onTailorResume,
+  coverLetterJobId,
+  onGenerateCoverLetter,
 }: JobFinderTabProps) {
   const availableSources = [
     "all",
@@ -230,6 +234,17 @@ export default function JobFinderTab({
                         {tailoringJobId === job.id ? "Tailoring..." : "Tailor Resume"}
                       </button>
 
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onGenerateCoverLetter(job);
+                        }}
+                        disabled={coverLetterJobId === job.id}
+                        className="px-3.5 py-1.5 rounded-xl font-display font-black text-xs bg-amber-500 hover:bg-amber-400 text-black transition-all shadow disabled:opacity-50"
+                      >
+                        {coverLetterJobId === job.id ? "Drafting..." : "Cover Letter"}
+                      </button>
+
                       <a
                         href={getSafeApplyUrl(job.apply_url, job.title, job.organization)}
                         target="_blank"
@@ -369,6 +384,13 @@ export default function JobFinderTab({
                             className="px-4 py-2 rounded-xl font-display font-black text-xs bg-amber-500 hover:bg-amber-400 text-black shadow transition-all disabled:opacity-50"
                           >
                             {tailoringJobId === job.id ? "Tailoring..." : "Tailor Resume"}
+                          </button>
+                          <button
+                            onClick={() => onGenerateCoverLetter(job)}
+                            disabled={coverLetterJobId === job.id}
+                            className="px-4 py-2 rounded-xl font-display font-black text-xs bg-amber-500 hover:bg-amber-400 text-black shadow transition-all disabled:opacity-50"
+                          >
+                            {coverLetterJobId === job.id ? "Drafting..." : "Cover Letter"}
                           </button>
                           <a
                             href={getSafeApplyUrl(job.apply_url, job.title, job.organization)}

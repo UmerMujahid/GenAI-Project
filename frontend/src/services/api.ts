@@ -224,3 +224,68 @@ export const exportTailoredResumePdfApi = async (payload: {
   link.remove();
   window.URL.revokeObjectURL(url);
 };
+
+export interface CoverLetterHeader {
+  candidate_name?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  github?: string;
+  linkedin?: string;
+}
+
+export interface CoverLetterResult {
+  id: string;
+  resume_id: string;
+  job_id: string;
+  job_title: string;
+  company_name: string;
+  use_tailored: boolean;
+  header: CoverLetterHeader;
+  salutation: string;
+  body_paragraphs: string[];
+  closing: string;
+  candidate_name: string;
+  full_text: string;
+  created_at?: string;
+}
+
+export const generateCoverLetterApi = async (payload: {
+  resume_id: string;
+  job_id: string;
+  company_name?: string;
+  use_tailored?: boolean;
+}): Promise<CoverLetterResult> => {
+  const response = await api.post<CoverLetterResult>("/agents/generate-cover-letter", {
+    resume_id: payload.resume_id,
+    job_id: payload.job_id,
+    company_name: payload.company_name || "",
+    use_tailored: payload.use_tailored ?? true,
+  });
+  return response.data;
+};
+
+export const exportCoverLetterPdfApi = async (payload: {
+  company_name?: string;
+  job_title?: string;
+  header?: CoverLetterHeader;
+  salutation?: string;
+  body_paragraphs?: string[];
+  closing?: string;
+  candidate_name?: string;
+  full_text?: string;
+}): Promise<void> => {
+  const response = await api.post("/agents/export-cover-letter-pdf", payload, {
+    responseType: "blob",
+  });
+  const blob = new Blob([response.data], { type: "application/pdf" });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const company = (payload.company_name || "Company").replace(/[^A-Za-z0-9._-]+/g, "_");
+  link.href = url;
+  link.download = `Cover_Letter_${company}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};

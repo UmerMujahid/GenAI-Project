@@ -7,15 +7,19 @@ import {
   getMatchedJobsApi,
   tailorResumeApi,
   exportTailoredResumePdfApi,
+  generateCoverLetterApi,
+  exportCoverLetterPdfApi,
   ResumeData,
   MatchedJobData,
   TailorResumeResult,
+  CoverLetterResult,
 } from "../services/api";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import DashboardOverview from "../components/dashboard/DashboardOverview";
 import JobFinderTab from "../components/dashboard/JobFinderTab";
 import ResumeParserTab from "../components/dashboard/ResumeParserTab";
 import TailorResumeModal from "../components/dashboard/TailorResumeModal";
+import CoverLetterModal from "../components/dashboard/CoverLetterModal";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -44,6 +48,11 @@ export default function Dashboard() {
   const [tailorError, setTailorError] = useState("");
   const [showTailorModal, setShowTailorModal] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [coverLetterJobId, setCoverLetterJobId] = useState<string | null>(null);
+  const [coverLetterResult, setCoverLetterResult] = useState<CoverLetterResult | null>(null);
+  const [coverLetterError, setCoverLetterError] = useState("");
+  const [showCoverLetterModal, setShowCoverLetterModal] = useState(false);
+  const [exportingCoverLetterPdf, setExportingCoverLetterPdf] = useState(false);
 
   // Initial Data Fetching
   useEffect(() => {
@@ -149,6 +158,54 @@ export default function Dashboard() {
       setTailorError(err.response?.data?.detail || "PDF export failed.");
     } finally {
       setExportingPdf(false);
+    }
+  };
+
+  const handleGenerateCoverLetter = async (job: MatchedJobData) => {
+    if (!resumeData?.id) {
+      setDiscoveryError("Upload a resume first so Agent 3 can draft a cover letter for this job.");
+      setActiveTab("resume");
+      return;
+    }
+
+    setShowCoverLetterModal(true);
+    setCoverLetterJobId(job.id);
+    setCoverLetterError("");
+    setCoverLetterResult(null);
+
+    try {
+      const result = await generateCoverLetterApi({
+        resume_id: resumeData.id,
+        job_id: job.id,
+        company_name: job.organization,
+        use_tailored: true,
+      });
+      setCoverLetterResult(result);
+    } catch (err: any) {
+      setCoverLetterError(err.response?.data?.detail || "Failed to generate cover letter.");
+    } finally {
+      setCoverLetterJobId(null);
+    }
+  };
+
+  const handleExportCoverLetterPdf = async (_editedText: string, paragraphs: string[]) => {
+    if (!coverLetterResult) return;
+    setExportingCoverLetterPdf(true);
+    try {
+      await exportCoverLetterPdfApi({
+        company_name: coverLetterResult.company_name,
+        job_title: coverLetterResult.job_title,
+        header: coverLetterResult.header,
+        salutation: coverLetterResult.salutation,
+        body_paragraphs: paragraphs.length ? paragraphs : coverLetterResult.body_paragraphs,
+        closing: coverLetterResult.closing,
+        candidate_name: coverLetterResult.candidate_name,
+        full_text: _editedText || coverLetterResult.full_text,
+      });
+    } catch (err: any) {
+      setCoverLetterError(err.response?.data?.detail || "Cover letter PDF export failed.");
+    } finally {
+      setExportingCoverLetterPdf(false);
     }
   };
 
@@ -273,6 +330,8 @@ export default function Dashboard() {
             handleDiscoverJobs={handleDiscoverJobs}
             tailoringJobId={tailoringJobId}
             onTailorResume={handleTailorResume}
+            coverLetterJobId={coverLetterJobId}
+            onGenerateCoverLetter={handleGenerateCoverLetter}
           />
         )}
 
@@ -300,6 +359,20 @@ export default function Dashboard() {
             setTailorError("");
           }}
           onExport={handleExportTailoredPdf}
+        />
+      )}
+
+      {showCoverLetterModal && (
+        <CoverLetterModal
+          result={coverLetterResult}
+          loading={Boolean(coverLetterJobId)}
+          error={coverLetterError}
+          exporting={exportingCoverLetterPdf}
+          onClose={() => {
+            setShowCoverLetterModal(false);
+            setCoverLetterError("");
+          }}
+          onExport={handleExportCoverLetterPdf}
         />
       )}
     </div>
