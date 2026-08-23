@@ -183,7 +183,7 @@ export default function Dashboard() {
    */
   const handleGenerateCoverLetter = async (job: MatchedJobData) => {
     if (!resumeData?.id) {
-      setDiscoveryError("Upload a resume first so Agent 3 can draft a cover letter for this job.");
+      setDiscoveryError("Upload a resume first so Agent 4 can draft a cover letter for this job.");
       setActiveTab("resume");
       return;
     }

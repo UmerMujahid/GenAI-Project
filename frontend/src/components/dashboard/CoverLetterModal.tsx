@@ -99,7 +99,7 @@ export default function CoverLetterModal({
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-500 text-black">
-                Agent 3
+                Agent 4
               </span>
               <span className="text-xs font-bold text-gray-400">Cover Letter via Groq</span>
             </div>
