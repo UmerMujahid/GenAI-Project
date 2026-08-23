@@ -54,6 +54,12 @@ class ResumeTailorAgent:
         self.groq_api_key = groq_api_key or os.getenv("GROQ_API_KEY", "")
         self.model_id = os.getenv("GROQ_MODEL", model_id)
 
+    def _get_groq_key(self) -> str:
+        return os.getenv("GROQ_API_KEY") or self.groq_api_key or ""
+
+    def _get_model_id(self) -> str:
+        return os.getenv("GROQ_MODEL") or self.model_id or "openai/gpt-oss-120b"
+
     def tailor_resume(self, resume_data: Dict[str, Any], job_data: Dict[str, Any]) -> Dict[str, Any]:
         """Produce a fact-preserving tailored resume dictionary for ``job_data``.
 
@@ -69,11 +75,13 @@ class ResumeTailorAgent:
         allowed_skill_set = self._allowed_skills(resume_data, original_skills)
 
         llm_payload = None
-        if self.groq_api_key:
+        api_key = self._get_groq_key()
+        if api_key:
             llm_payload = self._run_langchain_chain(resume_data, job_data)
 
         if llm_payload:
-            print(f"[ResumeTailorAgent] Tailored via LangChain + Groq ({self.model_id})")
+            model_id = self._get_model_id()
+            print(f"[ResumeTailorAgent] Tailored via LangChain + Groq ({model_id})")
             validated = self._validate_and_guard(
                 llm_payload,
                 original_skills,
@@ -89,10 +97,15 @@ class ResumeTailorAgent:
         return validated.model_dump()
 
     def _run_langchain_chain(self, resume_data: Dict[str, Any], job_data: Dict[str, Any]) -> Optional[dict]:
+        api_key = self._get_groq_key()
+        if not api_key:
+            return None
+
+        model_id = self._get_model_id()
         try:
             llm = ChatGroq(
-                model=self.model_id,
-                api_key=self.groq_api_key,
+                model=model_id,
+                api_key=api_key,
                 temperature=0.15,
                 max_tokens=2500,
             )

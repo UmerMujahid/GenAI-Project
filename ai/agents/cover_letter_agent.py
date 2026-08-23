@@ -50,6 +50,12 @@ class CoverLetterAgent:
         self.groq_api_key = groq_api_key or os.getenv("GROQ_API_KEY", "")
         self.model_id = os.getenv("GROQ_MODEL", model_id)
 
+    def _get_groq_key(self) -> str:
+        return os.getenv("GROQ_API_KEY") or self.groq_api_key or ""
+
+    def _get_model_id(self) -> str:
+        return os.getenv("GROQ_MODEL") or self.model_id or "openai/gpt-oss-120b"
+
     def generate_cover_letter(
         self,
         candidate: Dict[str, Any],
@@ -68,11 +74,13 @@ class CoverLetterAgent:
         """
         company = company_name or job.get("organization") or "the company"
         llm_payload = None
-        if self.groq_api_key:
+        api_key = self._get_groq_key()
+        if api_key:
             llm_payload = self._run_langchain_chain(candidate, job, company)
 
         if llm_payload:
-            print(f"[CoverLetterAgent] Generated via LangChain + Groq ({self.model_id})")
+            model_id = self._get_model_id()
+            print(f"[CoverLetterAgent] Generated via LangChain + Groq ({model_id})")
             return self._validate(llm_payload, candidate, company, job).model_dump()
 
         print("[CoverLetterAgent] LLM unavailable. Using factual heuristic fallback.")
@@ -84,11 +92,16 @@ class CoverLetterAgent:
         job: Dict[str, Any],
         company: str,
     ) -> Optional[dict]:
+        api_key = self._get_groq_key()
+        if not api_key:
+            return None
+
+        model_id = self._get_model_id()
         try:
             contact = candidate.get("contact_info") or {}
             llm = ChatGroq(
-                model=self.model_id,
-                api_key=self.groq_api_key,
+                model=model_id,
+                api_key=api_key,
                 temperature=0.25,
                 max_tokens=1800,
             )

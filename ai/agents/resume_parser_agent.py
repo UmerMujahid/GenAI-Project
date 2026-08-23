@@ -57,6 +57,12 @@ class ResumeParserAgent:
         parsed_data["parser_mode"] = parser_mode
         return self._normalize_schema(parsed_data)
 
+    def _get_groq_key(self) -> str:
+        return os.getenv("GROQ_API_KEY") or self.groq_api_key or ""
+
+    def _get_model_id(self) -> str:
+        return os.getenv("GROQ_MODEL") or self.model_id or "openai/gpt-oss-120b"
+
     def _run_langchain_chain(self, raw_text: str) -> dict:
         """Invoke the Groq LangChain prompt chain and return parsed JSON.
 
@@ -66,15 +72,17 @@ class ResumeParserAgent:
         Returns:
             dict | None: Structured fields on success, otherwise ``None``.
         """
-        if not self.groq_api_key:
+        api_key = self._get_groq_key()
+        if not api_key:
             print("[ResumeParserAgent] No Groq API key found, skipping LLM.")
             return None
 
+        model_id = self._get_model_id()
         try:
             # Low temperature keeps extraction deterministic for structured fields.
             llm = ChatGroq(
-                model=self.model_id,
-                api_key=self.groq_api_key,
+                model=model_id,
+                api_key=api_key,
                 temperature=0.1,
                 max_tokens=2000
             )

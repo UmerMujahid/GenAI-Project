@@ -261,11 +261,18 @@ class JobDiscoveryAgent:
             print(f"[JobDiscoveryAgent] JobSpy scrape exception: {e}")
             return []
 
+    def _get_groq_key(self) -> str:
+        return os.getenv("GROQ_API_KEY") or self.groq_api_key or ""
+
+    def _get_model_id(self) -> str:
+        return os.getenv("GROQ_MODEL") or self.model_id or "openai/gpt-oss-120b"
+
     def _score_job_with_llm(self, job: dict, skills: list, role: str, city: str, summary: str) -> dict:
         full_desc = job.get("requirements_summary", "") or job.get("core_responsibilities", "")
         desc_sample = full_desc[:1400] if len(full_desc) > 1400 else full_desc
 
-        if not self.groq_api_key:
+        api_key = self._get_groq_key()
+        if not api_key:
             resume_skills_lower = [s.lower() for s in skills]
             matched = [s for s in skills if s.lower() in desc_sample.lower()]
             missing = [s for s in ["Git", "Docker", "SQL", "REST API", "TypeScript"] if s.lower() in desc_sample.lower() and s.lower() not in resume_skills_lower]
@@ -278,9 +285,10 @@ class JobDiscoveryAgent:
             }
 
         try:
+            model_id = self._get_model_id()
             llm = ChatGroq(
-                model=self.model_id,
-                api_key=self.groq_api_key,
+                model=model_id,
+                api_key=api_key,
                 temperature=0.1,
                 max_tokens=600
             )

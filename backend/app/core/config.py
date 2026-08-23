@@ -1,5 +1,11 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 
+ENV_PATH = Path(__file__).resolve().parent.parent.parent / ".env"
+load_dotenv(ENV_PATH, override=True)
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field, AliasChoices
 
 class Settings(BaseSettings):
